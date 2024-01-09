@@ -49,7 +49,7 @@ module "route_53_github_records" {
   depends_on = [module.route_53_zone]
 }
 
-module "route_53_sendgrid_records" {
+module "route_53_private_email_records" {
   source  = "terraform-aws-modules/route53/aws//modules/records"
   version = "~> 2.0"
 
@@ -57,51 +57,20 @@ module "route_53_sendgrid_records" {
 
   records = [
     {
-      name    = "em9467"
-      type    = "CNAME"
+      name    = var.domain_name
+      type    = "MX"
       ttl     = 300
       records = [
-        "u26320669.wl170.sendgrid.net",
+        "10 mx1.privateemail.com",
+        "20 mx2.privateemail.com",
       ]
     },
     {
-      name    = "s1._domainkey"
-      type    = "CNAME"
-      ttl     = 300
-      records = [
-        "s1.domainkey.u26320669.wl170.sendgrid.net",
-      ]
-    },
-    {
-      name    = "s2._domainkey"
-      type    = "CNAME"
-      ttl     = 300
-      records = [
-        "s2.domainkey.u26320669.wl170.sendgrid.net",
-      ]
-    },
-    {
-      name    = "url7048"
-      type    = "CNAME"
-      ttl     = 300
-      records = [
-        "sendgrid.net",
-      ]
-    },
-    {
-      name    = "26320669"
-      type    = "CNAME"
-      ttl     = 300
-      records = [
-        "sendgrid.net",
-      ]
-    },
-    {
-      name    = "_dmarc"
+      name    = var.domain_name
       type    = "TXT"
       ttl     = 300
       records = [
-        "v=DMARC1; p=none;",
+        "v=spf1 include:spf.privateemail.com ~all",
       ]
     },
   ]
