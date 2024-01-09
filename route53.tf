@@ -24,6 +24,9 @@ module "route_53_records" {
       ttl     = 300
       records = [
         "185.199.108.153",
+        "185.199.109.153",
+        "185.199.110.153",
+        "185.199.111.153",
       ]
     },
     {
@@ -32,6 +35,14 @@ module "route_53_records" {
       ttl     = 300
       records = [
         "christiantoledana.com",
+      ]
+    },
+    {
+      name    = "_github-pages-challenge-toledana-ian"
+      type    = "TXT"
+      ttl     = 300
+      records = [
+        "813f9406ab172f340161ed3607c926",
       ]
     },
   ]
