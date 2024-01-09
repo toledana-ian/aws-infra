@@ -30,7 +30,7 @@ module "route_53_github_records" {
       ]
     },
     {
-      name  = "christiantoledana.com"
+      name  = ""
       type  = "A"
       alias = {
         name = "www.christiantoledana.com"
@@ -57,7 +57,7 @@ module "route_53_private_email_records" {
 
   records = [
     {
-      name    = var.domain_name
+      name    = ""
       type    = "MX"
       ttl     = 300
       records = [
@@ -66,11 +66,47 @@ module "route_53_private_email_records" {
       ]
     },
     {
-      name    = var.domain_name
+      name    = ""
       type    = "TXT"
       ttl     = 300
       records = [
         "v=spf1 include:spf.privateemail.com ~all",
+      ]
+    },
+  ]
+
+  depends_on = [module.route_53_zone]
+}
+
+module "route_53_amazon_ses_records" {
+  source  = "terraform-aws-modules/route53/aws//modules/records"
+  version = "~> 2.0"
+
+  zone_name = keys(module.route_53_zone.route53_zone_zone_id)[0]
+
+  records = [
+    {
+      name    = "wfma2ebkokzuq3hqaplu7cwyp4ynf3uq._domainkey"
+      type    = "CNAME"
+      ttl     = 300
+      records = [
+        "wfma2ebkokzuq3hqaplu7cwyp4ynf3uq.dkim.amazonses.com",
+      ]
+    },
+    {
+      name    = "u66p5fgjcwkoojzyd7g3xk7emjiygskc._domainkey"
+      type    = "CNAME"
+      ttl     = 300
+      records = [
+        "u66p5fgjcwkoojzyd7g3xk7emjiygskc.dkim.amazonses.com",
+      ]
+    },
+    {
+      name    = "caqymiro45yr3vmnl4m6fzkt22cmvd4i._domainkey"
+      type    = "CNAME"
+      ttl     = 300
+      records = [
+        "caqymiro45yr3vmnl4m6fzkt22cmvd4i.dkim.amazonses.com",
       ]
     },
   ]
