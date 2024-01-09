@@ -18,8 +18,19 @@ module "route_53_records" {
   zone_name = keys(module.route_53_zone.route53_zone_zone_id)[0]
 
   records = [
+#    {
+#      name    = "christiantoledana.com"
+#      type    = "A"
+#      ttl     = 300
+#      records = [
+#        "185.199.108.153",
+#        "185.199.109.153",
+#        "185.199.110.153",
+#        "185.199.111.153",
+#      ]
+#    },
     {
-      name    = "christiantoledana.com"
+      name    = "www"
       type    = "A"
       ttl     = 300
       records = [
@@ -27,14 +38,6 @@ module "route_53_records" {
         "185.199.109.153",
         "185.199.110.153",
         "185.199.111.153",
-      ]
-    },
-    {
-      name    = "www"
-      type    = "CNAME"
-      ttl     = 300
-      records = [
-        "christiantoledana.com",
       ]
     },
     {
