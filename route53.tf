@@ -113,3 +113,23 @@ module "route_53_amazon_ses_records" {
 
   depends_on = [module.route_53_zone]
 }
+
+module "route_53_dynamdev_app_records" {
+  source  = "terraform-aws-modules/route53/aws//modules/records"
+  version = "~> 2.0"
+
+  zone_name = keys(module.route_53_zone.route53_zone_zone_id)[0]
+
+  records = [
+    {
+      name    = var.sud_domain_dynamdev_email_blast
+      type    = "CNAME"
+      ttl     = 300
+      records = [
+        module.dynamdev_email_blast_webapp_s3.s3_bucket_website_endpoint,
+      ]
+    },
+  ]
+
+  depends_on = [module.route_53_zone]
+}
