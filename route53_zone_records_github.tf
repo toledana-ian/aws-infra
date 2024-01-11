@@ -11,7 +11,7 @@ resource "aws_route53_record" "www_christiantoledana_com" {
 }
 
 resource "aws_route53_record" "christiantoledana_com" {
-  name    = "www"
+  name    = ""
   type    = "A"
   zone_id = aws_route53_zone.christiantoledana_com.id
   alias {
