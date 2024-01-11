@@ -7,11 +7,11 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "christiantoledana-terraform-state"
+    bucket         = "ctoledana-terraform-state"
     key            = "state/terraform.tfstate"
     region         = "ap-southeast-1"
     encrypt        = true
-    dynamodb_table = "terraform-state-lockid"
+    dynamodb_table = "ctoledana-terraform-state-lockid"
   }
 }
 
