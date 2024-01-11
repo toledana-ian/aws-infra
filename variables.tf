@@ -8,7 +8,9 @@ variable "default_email" {
   default     = "admin@christiantoledana.com"
 }
 
-variable "sud_domain_dynamdev_email_blast"{
-  description = "The sub domain for dynamdev email blast app"
-  default     = "dynamdev-email-blast"
+variable "default_tags" {
+  description = "The default tags of resources"
+  default = {
+    ManagedBy = "Terraform"
+  }
 }
