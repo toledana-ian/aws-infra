@@ -45,7 +45,8 @@ resource "aws_cloudfront_distribution" "dynamdev_email_blast_composer_christiant
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn = aws_acm_certificate.dynamdev_email_blast_composer_christiantoledana_com.arn
+    ssl_support_method  = "sni-only"
   }
 
   tags = var.default_tags
