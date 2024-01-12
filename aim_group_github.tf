@@ -18,10 +18,7 @@ resource "aws_iam_policy" "github_actions_s3" {
         "s3:PutObject",
         "s3:DeleteObject"
       ],
-      "Resource": [
-        "arn:aws:s3:::your-s3-bucket-name",
-        "arn:aws:s3:::your-s3-bucket-name/*"
-      ]
+      "Resource": "*"
     }
   ]
 }
