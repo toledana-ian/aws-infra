@@ -3,9 +3,13 @@ resource "aws_cloudfront_origin_access_identity" "dynamdev_email_blast_composer_
 }
 
 resource "aws_cloudfront_distribution" "dynamdev_email_blast_composer_christiantoledana_com" {
-  enabled = true
+  enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "index.html"
+
+  aliases = [
+    "dynamdev-email-blast-composer.${aws_route53_zone.christiantoledana_com.name}"
+  ]
 
   origin {
     domain_name = aws_s3_bucket.app_email_blast_composer.bucket_domain_name
@@ -45,7 +49,7 @@ resource "aws_cloudfront_distribution" "dynamdev_email_blast_composer_christiant
   }
 
   viewer_certificate {
-    acm_certificate_arn = aws_acm_certificate.dynamdev_email_blast_composer_christiantoledana_com.arn
+    acm_certificate_arn = aws_acm_certificate.christiantoledana_com.arn
     ssl_support_method  = "sni-only"
   }
 

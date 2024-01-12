@@ -1,4 +1,4 @@
-resource "aws_acm_certificate" "dynamdev_email_blast_composer_christiantoledana_com" {
+resource "aws_acm_certificate" "christiantoledana_com" {
   provider = aws.acm
 
   domain_name = "*.${aws_route53_zone.christiantoledana_com.name}"
