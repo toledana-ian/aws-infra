@@ -1,4 +1,6 @@
-resource "aws_cloudfront_origin_access_identity" "dynamdev_email_blast_composer_christiantoledana_com" {}
+resource "aws_cloudfront_origin_access_identity" "dynamdev_email_blast_composer_christiantoledana_com" {
+  comment = "OAI for ${ aws_s3_bucket.app_email_blast_composer.bucket }"
+}
 
 resource "aws_cloudfront_distribution" "dynamdev_email_blast_composer_christiantoledana_com" {
   enabled = true
