@@ -1,5 +1,5 @@
 module "email-blast-composer" {
-  source = "../modules/email-blast-composer"
+  source = "../modules/app-email-blast-composer"
   name   = "prod-email-blast-composer"
 
   route_sub_domain_name = "dynamdev-email-blast-composer"
