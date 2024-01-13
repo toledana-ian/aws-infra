@@ -7,4 +7,6 @@ resource "aws_acm_certificate" "christiantoledana_com" {
   lifecycle {
     create_before_destroy = true
   }
+
+  tags = merge(local.default_tags, {})
 }
