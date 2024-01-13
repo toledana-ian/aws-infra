@@ -8,10 +8,10 @@ terraform {
 
   backend "s3" {
     bucket         = "ctoledana-terraform-state"
-    key            = "state/terraform.tfstate"
+    key            = "global/terraform.tfstate"
     region         = "ap-southeast-1"
     encrypt        = true
-    dynamodb_table = "ctoledana-terraform-state-lockid"
+    dynamodb_table = "ctoledana-terraform-state-lock"
   }
 }
 
