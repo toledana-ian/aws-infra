@@ -11,13 +11,16 @@ resource "aws_s3_bucket_policy" "app" {
     Statement = [
       {
         Sid       = "AllowCloudFrontAccess"
-        Action   = "s3:GetObject"
-        Effect    = "Allow"
-        Resource = "arn:aws:s3:::${aws_s3_bucket.app.id}/public/*"
+        "Effect": "Allow",
         "Principal": {
-          "AWS": [
-            "${aws_cloudfront_origin_access_identity.app.iam_arn}"
-          ]
+          "Service": "cloudfront.amazonaws.com"
+        },
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::${aws_s3_bucket.app.bucket}/public/*",
+        "Condition": {
+          "StringEquals": {
+            "AWS:SourceArn": aws_cloudfront_distribution.app.arn
+          }
         }
       }
     ]

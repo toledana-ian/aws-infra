@@ -15,10 +15,6 @@ resource "aws_cloudfront_distribution" "app" {
     domain_name = aws_s3_bucket.app.bucket_domain_name
     origin_id   = aws_s3_bucket.app.bucket
     origin_path = "/public"
-
-    s3_origin_config {
-      origin_access_identity = aws_cloudfront_origin_access_identity.app.cloudfront_access_identity_path
-    }
   }
 
   default_cache_behavior {
