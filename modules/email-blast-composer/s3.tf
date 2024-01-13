@@ -3,7 +3,7 @@ resource "aws_s3_bucket" "app" {
   tags = var.tags
 }
 
-resource "aws_s3_bucket_policy" "app_email_blast_composer" {
+resource "aws_s3_bucket_policy" "app" {
   bucket = aws_s3_bucket.app.id
 
   policy = jsonencode({

@@ -1,4 +1,4 @@
-resource "aws_route53_record" "dynamdev_email_blast_composer_christiantoledana_com" {
+resource "aws_route53_record" "app" {
   name    = var.route_sub_domain_name
   type    = "A"
   zone_id = var.route_zone_id
