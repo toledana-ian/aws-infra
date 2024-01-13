@@ -8,7 +8,7 @@ resource "aws_cloudfront_distribution" "app" {
   ]
 
   origin {
-    domain_name = aws_s3_bucket.app.bucket_domain_name
+    domain_name = aws_s3_bucket.app.bucket_regional_domain_name
     origin_id   = aws_s3_bucket.app.bucket
     origin_path = "/public"
   }
