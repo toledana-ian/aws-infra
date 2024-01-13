@@ -18,6 +18,11 @@ terraform {
 provider "aws" {
   alias = "default"
   region = "ap-southeast-1"
+
+  default_tags = {
+    ManagedBy = "Terraform"
+    Environment = "Global"
+  }
 }
 
 provider "aws" {

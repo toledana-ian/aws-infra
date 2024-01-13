@@ -1,6 +1,5 @@
 resource "aws_iam_user" "bot_github_action" {
   name = "bot-github-action"
-  tags = var.default_tags
 }
 
 resource "aws_iam_user_group_membership" "bot_github_action" {
