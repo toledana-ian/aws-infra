@@ -1,7 +1,3 @@
-resource "aws_cloudfront_origin_access_identity" "app" {
-  comment = "OAI for ${ aws_s3_bucket.app.bucket }"
-}
-
 resource "aws_cloudfront_distribution" "app" {
   enabled             = true
   is_ipv6_enabled     = true
