@@ -5,7 +5,7 @@ resource "aws_route_table" "public" {
     for_each = var.create_igw ? [1] : []
     content {
       cidr_block = "0.0.0.0/0"
-      gateway_id = aws_internet_gateway.main.id
+      gateway_id = var.create_igw ? aws_internet_gateway.main[0].id : null
     }
   }
 
