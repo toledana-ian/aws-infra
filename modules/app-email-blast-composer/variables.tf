@@ -26,3 +26,8 @@ variable "acm_certificate_arn" {
   type = string
   description = "The ARN of the ACM certificate"
 }
+
+variable "environment" {
+  type = string
+  description = "The current environment of this module"
+}

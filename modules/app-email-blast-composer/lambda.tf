@@ -20,3 +20,15 @@ resource "aws_lambda_function" "app" {
 
   tags = var.tags
 }
+
+resource "aws_lambda_permission" "allow_api_gateway" {
+  for_each = toset(local.lambda_functions)
+
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.app[each.value].function_name
+  principal     = "apigateway.amazonaws.com"
+
+  // This is important - the source ARN should match the ARN of the API method calling the Lambda
+  source_arn    = "${aws_api_gateway_rest_api.app.execution_arn}/*/*"
+}

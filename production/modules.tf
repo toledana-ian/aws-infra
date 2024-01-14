@@ -8,6 +8,8 @@ module "app-email-blast-composer" {
 
   acm_certificate_arn = data.terraform_remote_state.global.outputs.acm_certificate_arn_christiantoledana_com
 
+  environment = local.default_tags.Environment
+
   tags   = merge(local.default_tags, {
     Project = "email-blast-composer"
   })
