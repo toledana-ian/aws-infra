@@ -1,10 +1,3 @@
-module "network" {
-  source = "../modules/network"
-  tags = local.default_tags
-  environment = "production"
-  create_igw = true
-}
-
 module "app-email-blast-composer" {
   source = "../modules/app-email-blast-composer"
   name   = "prod-email-blast-composer"
