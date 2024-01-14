@@ -21,11 +21,10 @@ ZIP_FILE_KEY="$2"
 # of the object.
 # The ETag of an S3 object is the MD5 hash of the object and is wrapped
 # in double quotes. We save this to the `etag` variable
-etag=$(aws s3api head-object --bucket $BUCKET_NAME --key $ZIP_FILE_KEY --query 'ETag' --output text)
-
+etag=$(aws s3api head-object --bucket "$BUCKET_NAME" --key "$ZIP_FILE_KEY" --query 'ETag' --output text)
 # We then remove the double quotes from `etag` and save this to the
 # `source_code_hash` variable.
-source_code_hash=$(echo -n $etag | tr -d '"')
+source_code_hash=$(echo -n "$etag" | tr -d '"')
 
 # Finally we print the source code hash in a JSON format.
 echo "{\"source_code_hash\":\"$source_code_hash\"}"

@@ -17,6 +17,7 @@ ZIP_FILE_KEY="$2"
 function filenames_to_json {
     local json="{"
     local first=true
+
     while IFS= read -r line; do
         if [[ $line =~ ^[[:space:]]+[0-9]+ ]]; then
             local filename
@@ -30,12 +31,12 @@ function filenames_to_json {
                 else
                     json+=","
                 fi
-                json+="\"$filename\": \"true\""
+                json+="\"${filename}\": \"true\""
             fi
         fi
     done
     json+='}'
-    echo "$json"
+    echo "${json}"
 }
 
 # Temporarily stores the downloaded zip file
