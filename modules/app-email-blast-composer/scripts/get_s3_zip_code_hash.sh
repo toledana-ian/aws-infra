@@ -15,4 +15,4 @@ etag=$(aws s3api head-object --bucket $BUCKET_NAME --key $ZIP_FILE_KEY --query '
 # Calculate the source_code_hash
 source_code_hash=$(echo -n $etag | tr -d '"')
 
-echo $source_code_hash
+echo "{\"source_code_hash\":\"$source_code_hash\"}"

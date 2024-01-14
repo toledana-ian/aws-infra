@@ -6,10 +6,10 @@ resource "aws_lambda_function" "app" {
   s3_key        = local.lambda_zip_filename
 
   runtime = "nodejs18.x"
-  handler = "dist/${each.value}.handler"
+  handler = "${each.value}.handler"
   timeout = 10
 
-  source_code_hash = "haha"
+  source_code_hash = local.lambda_source_code_hash
   role             = aws_iam_role.lambda.arn
 
   lifecycle {

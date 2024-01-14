@@ -3,5 +3,5 @@ locals {
 
   lambda_functions = keys(data.external.get_lambda_list.result)
 
-  lambda_source_code_hash =
+  lambda_source_code_hash =  data.external.get_lambda_source_code_hash.result["source_code_hash"]
 }
