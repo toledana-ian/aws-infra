@@ -17,6 +17,8 @@ function filenames_to_json {
             local filename
             filename=$(echo "$line" | awk '{print $4}')
             if [ -n "$filename" ]; then
+                # Remove file extension using parameter expansion
+                filename="${filename%.*}"
                 if [ "$first" = true ]; then
                     first=false
                 else
