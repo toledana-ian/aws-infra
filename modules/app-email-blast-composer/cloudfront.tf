@@ -58,6 +58,7 @@ resource "aws_cloudfront_distribution" "api" {
   origin {
     domain_name = local.api_gateway_domain
     origin_id   = aws_api_gateway_rest_api.api.id
+    origin_path = "/default"
 
     custom_origin_config {
       http_port                = 80
