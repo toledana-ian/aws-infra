@@ -1,6 +1,8 @@
 resource "aws_api_gateway_rest_api" "app" {
   name        = aws_s3_bucket.app.bucket
   description = "Lambda API of ${aws_s3_bucket.app.bucket}"
+
+  tags = var.tags
 }
 
 resource "aws_api_gateway_resource" "app" {
