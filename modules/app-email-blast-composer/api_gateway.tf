@@ -31,7 +31,7 @@ resource "aws_api_gateway_integration" "app" {
   uri                     = aws_lambda_function.app[each.value].invoke_arn
 }
 
-resource "aws_api_gateway_deployment" "my_api_deployment" {
+resource "aws_api_gateway_deployment" "app" {
   depends_on = [
     aws_api_gateway_integration.app
   ]
