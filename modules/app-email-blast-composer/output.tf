@@ -1,3 +1,3 @@
 output "test" {
-  value = local.lambda_functions
+  value = local.api_gateway_domain
 }

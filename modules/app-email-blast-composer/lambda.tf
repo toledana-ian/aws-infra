@@ -1,4 +1,4 @@
-resource "aws_lambda_function" "app" {
+resource "aws_lambda_function" "api" {
   for_each = toset(local.lambda_functions)
 
   function_name = "${var.name}-${each.value}"
@@ -26,9 +26,9 @@ resource "aws_lambda_permission" "allow_api_gateway" {
 
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.app[each.value].function_name
+  function_name = aws_lambda_function.api[each.value].function_name
   principal     = "apigateway.amazonaws.com"
 
   // This is important - the source ARN should match the ARN of the API method calling the Lambda
-  source_arn    = "${aws_api_gateway_rest_api.app.execution_arn}/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
 }
