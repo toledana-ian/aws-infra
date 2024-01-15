@@ -1,5 +1,5 @@
 resource "aws_route53_record" "app" {
-  name    = var.route_sub_domain_name
+  name    = var.route_app_sub_domain_name
   type    = "A"
   zone_id = var.route_zone_id
 

@@ -12,9 +12,14 @@ variable "route_domain_name" {
   description = "The domain name for the route"
 }
 
-variable "route_sub_domain_name" {
+variable "route_app_sub_domain_name" {
   type = string
-  description = "The subdomain name for the route"
+  description = "The subdomain name for the app route"
+}
+
+variable "route_api_sub_domain_name" {
+  type = string
+  description = "The subdomain name for the api route"
 }
 
 variable "route_zone_id" {

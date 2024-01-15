@@ -14,7 +14,7 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   aliases = [
-    "${var.route_sub_domain_name}.${var.route_domain_name}"
+    var.route_app_sub_domain_name == "" ? var.route_domain_name : format("%s.%s", var.route_app_sub_domain_name, var.route_domain_name)
   ]
 
   enabled             = true
