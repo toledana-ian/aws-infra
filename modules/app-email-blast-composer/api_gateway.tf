@@ -18,7 +18,7 @@ resource "aws_api_gateway_method" "api" {
 
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.api[each.value].id
-  http_method   = "GET"
+  http_method   = "POST"
   authorization = "NONE"
 }
 
