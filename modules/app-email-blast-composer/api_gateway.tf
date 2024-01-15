@@ -8,7 +8,7 @@ resource "aws_api_gateway_resource" "app" {
 
   rest_api_id = aws_api_gateway_rest_api.app.id
   parent_id   = aws_api_gateway_rest_api.app.root_resource_id
-  path_part   = aws_lambda_function.app[each.value].function_name
+  path_part   = each.value
 }
 
 resource "aws_api_gateway_method" "app" {
