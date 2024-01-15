@@ -6,7 +6,7 @@ resource "aws_api_gateway_rest_api" "api" {
 }
 
 resource "aws_api_gateway_resource" "api" {
-  for_each = toset(local.lambda_functions)
+  for_each = toset(local.lambda_simple_rest_functions)
 
   rest_api_id = aws_api_gateway_rest_api.api.id
   parent_id   = aws_api_gateway_rest_api.api.root_resource_id
@@ -14,7 +14,7 @@ resource "aws_api_gateway_resource" "api" {
 }
 
 resource "aws_api_gateway_method" "api" {
-  for_each = toset(local.lambda_functions)
+  for_each = toset(local.lambda_simple_rest_functions)
 
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.api[each.value].id
@@ -23,7 +23,7 @@ resource "aws_api_gateway_method" "api" {
 }
 
 resource "aws_api_gateway_integration" "api" {
-  for_each = toset(local.lambda_functions)
+  for_each = toset(local.lambda_simple_rest_functions)
 
   rest_api_id             = aws_api_gateway_rest_api.api.id
   resource_id             = aws_api_gateway_resource.api[each.value].id

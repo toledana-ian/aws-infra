@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "api" {
-  for_each = toset(local.lambda_functions)
+  for_each = toset(local.lambda_simple_rest_functions)
 
   function_name = "${var.name}-${each.value}"
   s3_bucket     = aws_s3_bucket.app.id
@@ -21,8 +21,8 @@ resource "aws_lambda_function" "api" {
   tags = var.tags
 }
 
-resource "aws_lambda_permission" "allow_api_gateway" {
-  for_each = toset(local.lambda_functions)
+resource "aws_lambda_permission" "api" {
+  for_each = toset(local.lambda_simple_rest_functions)
 
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
