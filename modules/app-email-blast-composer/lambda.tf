@@ -96,6 +96,12 @@ resource "aws_lambda_function" "send_email" {
   source_code_hash = local.lambda_source_code_hash
   role             = aws_iam_role.api.arn
 
+  environment {
+    variables = {
+      SENDGRID_API_KEY=aws_secretsmanager_secret.sendgrid.arn
+    }
+  }
+
   lifecycle {
     ignore_changes = [
       source_code_hash
