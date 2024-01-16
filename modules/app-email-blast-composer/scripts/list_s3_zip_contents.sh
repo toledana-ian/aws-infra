@@ -11,6 +11,13 @@ fi
 BUCKET_NAME="$1"
 ZIP_FILE_KEY="$2"
 
+# Check if ZIP file exists
+output=$(aws s3api head-object --bucket "${BUCKET_NAME}" --key "${ZIP_FILE_KEY}" 2>&1)
+if echo "$output" | grep -q "Not Found"; then
+  echo "{}"
+  exit 0
+fi
+
 # Function to convert filenames into a JSON object.
 # It receives the filenames one by one from the while loop and constructs a JSON object.
 # If the filename is not empty, it removes the file extension and adds an entry into the JSON object.
