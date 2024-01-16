@@ -86,3 +86,10 @@ resource "aws_lambda_function" "send_email" {
 
   tags = var.tags
 }
+
+resource "aws_lambda_event_source_mapping" "send_email" {
+  count = contains(local.lambda_functions, "send-email") ? 1 : 0
+
+  event_source_arn = aws_sqs_queue.email.arn
+  function_name    = aws_lambda_function.send_email[count.index].arn
+}

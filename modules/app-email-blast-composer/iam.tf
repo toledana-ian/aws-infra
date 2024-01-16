@@ -16,36 +16,54 @@ resource "aws_iam_role" "api" {
   })
 }
 
-resource "aws_iam_role_policy" "api" {
+resource "aws_iam_role_policy" "allow_logs" {
   role   = aws_iam_role.api.id
   policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
+    "Version" : "2012-10-17",
+    "Statement" : [
       {
-        "Action": [
+        "Action" : [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ],
-        "Resource": "arn:aws:logs:*:*:*",
-        "Effect": "Allow"
+        "Resource" : "arn:aws:logs:*:*:*",
+        "Effect" : "Allow"
       }
     ]
   })
 }
 
-resource "aws_iam_role_policy" "queue_email" {
-  name = "lambda_policy"
-  role = aws_iam_role.api.id
-
+resource "aws_iam_role_policy" "send_queue" {
+  role   = aws_iam_role.api.id
   policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Action = [
-        "sqs:SendMessage"
-      ],
-      Effect = "Allow",
-      Resource = aws_sqs_queue.email.arn
-    }]
+    Version   = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "sqs:SendMessage"
+        ],
+        Effect   = "Allow",
+        Resource = aws_sqs_queue.email.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "receive_queue" {
+  role   = aws_iam_role.api.id
+  policy = jsonencode({
+    Version   = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes"
+        ],
+        Resource = aws_sqs_queue.email.arn
+      }
+    ]
   })
 }
