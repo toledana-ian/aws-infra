@@ -1,3 +1,3 @@
 output "test" {
-  value = data.external.get_lambda_source_code_hash.result
+  value = data.aws_caller_identity.app.id
 }
