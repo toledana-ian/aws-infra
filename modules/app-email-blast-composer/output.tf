@@ -1,3 +1,3 @@
 output "test" {
-  value = data.aws_caller_identity.app.id
+  value = local.lambda_simple_rest_functions
 }
