@@ -12,6 +12,12 @@ resource "aws_lambda_function" "simple_rest" {
   source_code_hash = local.lambda_source_code_hash
   role             = aws_iam_role.api.arn
 
+  lifecycle {
+    ignore_changes = [
+      source_code_hash
+    ]
+  }
+
   tags = var.tags
 }
 
@@ -38,6 +44,18 @@ resource "aws_lambda_function" "queue_email" {
 
   source_code_hash = local.lambda_source_code_hash
   role             = aws_iam_role.api.arn
+
+  environment {
+    variables = {
+      QUEUE_URL=aws_sqs_queue.email.url
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      source_code_hash
+    ]
+  }
 
   tags = var.tags
 }
@@ -77,6 +95,12 @@ resource "aws_lambda_function" "send_email" {
 
   source_code_hash = local.lambda_source_code_hash
   role             = aws_iam_role.api.arn
+
+  lifecycle {
+    ignore_changes = [
+      source_code_hash
+    ]
+  }
 
   tags = var.tags
 }
