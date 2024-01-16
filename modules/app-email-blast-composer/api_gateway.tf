@@ -38,5 +38,5 @@ resource "aws_api_gateway_integration" "simple_rest_api" {
   http_method             = aws_api_gateway_method.simple_rest_api[each.value].http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.api[each.value].invoke_arn
+  uri                     = aws_lambda_function.api_simple_rest[each.value].invoke_arn
 }
