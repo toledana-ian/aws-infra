@@ -21,6 +21,16 @@ resource "aws_lambda_function" "api_simple_rest" {
   tags = var.tags
 }
 
+resource "aws_lambda_permission" "api_simple_rest" {
+  for_each = toset(local.lambda_simple_rest_functions)
+
+  function_name = aws_lambda_function.api_simple_rest[each.value].function_name
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+}
+
 resource "aws_lambda_function" "api_queue_email" {
   function_name = "${var.name}-queue-email"
   s3_bucket     = aws_s3_bucket.app.id
@@ -42,6 +52,14 @@ resource "aws_lambda_function" "api_queue_email" {
   tags = var.tags
 }
 
+resource "aws_lambda_permission" "api_queue_email" {
+  function_name = aws_lambda_function.api_queue_email.function_name
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+}
+
 resource "aws_lambda_function" "api_send_email" {
   function_name = "${var.name}-send-email"
   s3_bucket     = aws_s3_bucket.app.id
@@ -61,24 +79,6 @@ resource "aws_lambda_function" "api_send_email" {
   }
 
   tags = var.tags
-}
-
-resource "aws_lambda_permission" "api_simple_rest" {
-  for_each = toset(local.lambda_simple_rest_functions)
-
-  function_name = aws_lambda_function.api_simple_rest[each.value].function_name
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
-}
-
-resource "aws_lambda_permission" "api_queue_email" {
-  function_name = aws_lambda_function.api_queue_email.function_name
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "api_send_email" {
