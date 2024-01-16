@@ -86,13 +86,3 @@ resource "aws_lambda_function" "send_email" {
 
   tags = var.tags
 }
-
-#resource "aws_lambda_permission" "api_send_email" {
-#  count = contains(local.lambda_functions, "send-email") ? 1 : 0
-#
-#  function_name = aws_lambda_function.api_send_email[count.index].function_name
-#  statement_id  = "AllowExecutionFromAPIGateway"
-#  action        = "lambda:InvokeFunction"
-#  principal     = "apigateway.amazonaws.com"
-#  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
-#}

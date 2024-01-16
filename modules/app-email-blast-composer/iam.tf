@@ -27,3 +27,19 @@ data "aws_iam_policy_document" "api" {
     resources = ["arn:aws:logs:*:*:*"]
   }
 }
+
+resource "aws_iam_role_policy" "queue_email" {
+  name = "lambda_policy"
+  role = aws_iam_role.api.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action = [
+        "sqs:SendMessage"
+      ],
+      Effect = "Allow",
+      Resource = aws_sqs_queue.email.arn
+    }]
+  })
+}
