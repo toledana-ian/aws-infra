@@ -64,17 +64,17 @@ resource "aws_lambda_permission" "queue_email_trigger" {
   source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
 }
 
-resource "aws_lambda_function_event_invoke_config" "queue_email_destination" {
-  count = contains(local.lambda_functions, "queue-email") ? 1 : 0
-
-  function_name = aws_lambda_function.queue_email[count.index].function_name
-
-  destination_config {
-    on_success {
-      destination = aws_sqs_queue.email.arn
-    }
-  }
-}
+#resource "aws_lambda_function_event_invoke_config" "queue_email_destination" {
+#  count = contains(local.lambda_functions, "queue-email") ? 1 : 0
+#
+#  function_name = aws_lambda_function.queue_email[count.index].function_name
+#
+#  destination_config {
+#    on_success {
+#      destination = aws_sqs_queue.email.arn
+#    }
+#  }
+#}
 
 resource "aws_lambda_function" "send_email" {
   count = contains(local.lambda_functions, "send-email") ? 1 : 0
