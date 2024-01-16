@@ -21,7 +21,7 @@ resource "aws_lambda_function" "simple_rest" {
   tags = var.tags
 }
 
-resource "aws_lambda_permission" "simple_rest" {
+resource "aws_lambda_permission" "simple_rest_trigger" {
   for_each = toset(local.lambda_simple_rest_functions)
 
   function_name = aws_lambda_function.simple_rest[each.value].function_name
@@ -54,7 +54,7 @@ resource "aws_lambda_function" "queue_email" {
   tags = var.tags
 }
 
-resource "aws_lambda_permission" "queue_email" {
+resource "aws_lambda_permission" "queue_email_trigger" {
   count = contains(local.lambda_functions, "queue-email") ? 1 : 0
 
   function_name = aws_lambda_function.queue_email[count.index].function_name
@@ -62,6 +62,18 @@ resource "aws_lambda_permission" "queue_email" {
   action        = "lambda:InvokeFunction"
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+}
+
+resource "aws_lambda_function_event_invoke_config" "queue_email_destination" {
+  count = contains(local.lambda_functions, "queue-email") ? 1 : 0
+
+  function_name = aws_lambda_function.queue_email[count.index].function_name
+
+  destination_config {
+    on_success {
+      destination = aws_sqs_queue.email.arn
+    }
+  }
 }
 
 resource "aws_lambda_function" "send_email" {
@@ -87,7 +99,7 @@ resource "aws_lambda_function" "send_email" {
   tags = var.tags
 }
 
-resource "aws_lambda_event_source_mapping" "send_email" {
+resource "aws_lambda_event_source_mapping" "send_email_trigger" {
   count = contains(local.lambda_functions, "send-email") ? 1 : 0
 
   event_source_arn = aws_sqs_queue.email.arn
