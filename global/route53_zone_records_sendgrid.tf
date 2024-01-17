@@ -1,5 +1,5 @@
 resource "aws_route53_record" "sendgrid_url9423_christiantoledana_com" {
-  name    = "url9423"
+  name    = "url6458"
   type    = "CNAME"
   zone_id = aws_route53_zone.christiantoledana_com.id
   ttl     = 300
