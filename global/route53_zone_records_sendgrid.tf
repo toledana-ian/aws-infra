@@ -1,5 +1,5 @@
-resource "aws_route53_record" "sendgrid_url9423_christiantoledana_com" {
-  name    = "url6458"
+resource "aws_route53_record" "sendgrid_url1984_christiantoledana_com" {
+  name    = "url1984"
   type    = "CNAME"
   zone_id = aws_route53_zone.christiantoledana_com.id
   ttl     = 300
@@ -9,8 +9,8 @@ resource "aws_route53_record" "sendgrid_url9423_christiantoledana_com" {
   ]
 }
 
-resource "aws_route53_record" "sendgrid_26320669_christiantoledana_com" {
-  name    = "26320669"
+resource "aws_route53_record" "sendgrid_41246841_christiantoledana_com" {
+  name    = "41246841"
   type    = "CNAME"
   zone_id = aws_route53_zone.christiantoledana_com.id
   ttl     = 300
@@ -20,14 +20,14 @@ resource "aws_route53_record" "sendgrid_26320669_christiantoledana_com" {
   ]
 }
 
-resource "aws_route53_record" "sendgrid_em5688_christiantoledana_com" {
-  name    = "em5688"
+resource "aws_route53_record" "sendgrid_em1918_christiantoledana_com" {
+  name    = "em1918"
   type    = "CNAME"
   zone_id = aws_route53_zone.christiantoledana_com.id
   ttl     = 300
 
   records = [
-    "u26320669.wl170.sendgrid.net",
+    "u41246841.wl092.sendgrid.net",
   ]
 }
 
@@ -38,7 +38,7 @@ resource "aws_route53_record" "sendgrid_s1_domainkey_christiantoledana_com" {
   ttl     = 300
 
   records = [
-    "s1.domainkey.u26320669.wl170.sendgrid.net",
+    "s1.domainkey.u41246841.wl092.sendgrid.net",
   ]
 }
 
@@ -49,7 +49,7 @@ resource "aws_route53_record" "sendgrid_s2_domainkey_christiantoledana_com" {
   ttl     = 300
 
   records = [
-    "s2.domainkey.u26320669.wl170.sendgrid.net",
+    "s2.domainkey.u41246841.wl092.sendgrid.net",
   ]
 }
 
