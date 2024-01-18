@@ -56,15 +56,15 @@ resource "aws_cloudfront_distribution" "app" {
 
 resource "aws_cloudfront_distribution" "api" {
   origin {
-    domain_name = local.api_gateway_domain
+    domain_name = split("/", aws_api_gateway_deployment.api.invoke_url)[2]
     origin_id   = aws_api_gateway_rest_api.api.id
     origin_path = "/default"
 
     custom_origin_config {
-      http_port                = 80
-      https_port               = 443
-      origin_protocol_policy   = "https-only"
-      origin_ssl_protocols     = ["TLSv1.2"]
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
     }
   }
 
@@ -72,7 +72,7 @@ resource "aws_cloudfront_distribution" "api" {
     format("%s.%s", var.route_api_sub_domain_name, var.route_domain_name)
   ]
 
-  enabled             = true
+  enabled = true
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]

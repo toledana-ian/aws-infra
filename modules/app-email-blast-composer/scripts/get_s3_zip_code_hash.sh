@@ -1,16 +1,11 @@
 #!/bin/bash
 
-# This script fetches the ETag (MD5 hash) of a file present in an S3 bucket
-# and prints it in a JSON format.
+# This script is used to download a zip file from an S3 bucket, list its contents and convert the filenames into a JSON object.
 
-# It expects two arguments: the S3 bucket name and the key of the file
-# present in that bucket.
-
-# Check if two arguments are provided.
-# If not, print the usage and exit.
+# Check if two arguments are provided
 if [ "$#" -ne 2 ]; then
     echo "Usage: $0 <BUCKET_NAME> <ZIP_FILE_KEY>"
-    exit 0
+    exit 1
 fi
 
 BUCKET_NAME="$1"
@@ -23,15 +18,17 @@ if echo "$output" | grep -q "Not Found"; then
   exit 0
 fi
 
-# The `aws s3api head-object` command fetches the metadata of an object
-# in S3. The `--query 'ETag'` option is used to retrieve only the ETag
-# of the object.
-# The ETag of an S3 object is the MD5 hash of the object and is wrapped
-# in double quotes. We save this to the `etag` variable.
-etag=$(aws s3api head-object --bucket "$BUCKET_NAME" --key "$ZIP_FILE_KEY" --query 'ETag' --output text)
-# We then remove the double quotes from `etag` and save this to the
-# `source_code_hash` variable.
-source_code_hash=$(echo -n "$etag" | tr -d '"')
+# Temporarily stores the downloaded zip file
+TMP_ZIP_FILE=$(mktemp)
 
-# Finally we print the source code hash in a JSON format.
+# Download the zip file from the S3 bucket and store it in the temporary location
+aws s3 cp "s3://${BUCKET_NAME}/${ZIP_FILE_KEY}" "${TMP_ZIP_FILE}" --quiet
+
+# Generate the hash of the file and store it in a variable
+source_code_hash=$(sha256sum $LOCAL_FILE_NAME | awk '{ print $1 }')
+
+# Output the hash in JSON format
 echo "{\"source_code_hash\":\"$source_code_hash\"}"
+
+# Remove the temporary zip file
+rm "${TMP_ZIP_FILE}"

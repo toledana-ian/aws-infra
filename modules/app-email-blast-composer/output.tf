@@ -1,3 +1,3 @@
 output "test" {
-  value = local.api_gateway_domain
+  value = local.lambda_source_code_hash
 }
