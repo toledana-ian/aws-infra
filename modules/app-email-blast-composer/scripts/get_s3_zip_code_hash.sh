@@ -25,7 +25,7 @@ TMP_ZIP_FILE=$(mktemp)
 aws s3 cp "s3://${BUCKET_NAME}/${ZIP_FILE_KEY}" "${TMP_ZIP_FILE}" --quiet
 
 # Generate the hash of the file and store it in a variable
-source_code_hash=$(sha256sum $LOCAL_FILE_NAME | awk '{ print $1 }')
+source_code_hash=$(openssl dgst -sha256 -binary $TMP_ZIP_FILE | openssl base64)
 
 # Output the hash in JSON format
 echo "{\"source_code_hash\":\"$source_code_hash\"}"
