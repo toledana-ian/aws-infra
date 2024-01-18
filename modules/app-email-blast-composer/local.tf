@@ -2,8 +2,6 @@ locals {
   // the domain of the api gateway
   api_gateway_domain = split("/", aws_api_gateway_deployment.api.invoke_url)[2]
 
-  sqs_email_domain = split("/", aws_sqs_queue.email.url)[2]
-
   // name of the file where the lambdas are stored
   lambda_zip_filename = "lambdas.zip"
 

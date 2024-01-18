@@ -22,11 +22,6 @@ variable "route_api_sub_domain_name" {
   description = "The subdomain name for the api route"
 }
 
-variable "route_queue_sub_domain_name" {
-  type = string
-  description = "The subdomain name for the queue route"
-}
-
 variable "route_zone_id" {
   type = string
   description = "The ID of the zone in which the route is defined"
