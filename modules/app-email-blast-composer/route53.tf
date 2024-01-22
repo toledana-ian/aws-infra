@@ -9,15 +9,3 @@ resource "aws_route53_record" "app" {
     evaluate_target_health = false
   }
 }
-
-resource "aws_route53_record" "api" {
-  name    = var.route_api_sub_domain_name
-  type    = "A"
-  zone_id = var.route_zone_id
-
-  alias {
-    name                   = aws_cloudfront_distribution.api.domain_name
-    zone_id                = aws_cloudfront_distribution.api.hosted_zone_id
-    evaluate_target_health = false
-  }
-}
