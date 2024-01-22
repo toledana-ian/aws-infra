@@ -1,16 +1,16 @@
 locals {
-  // name of the file where the lambdas are stored
+  // Name of the ZIP file where the AWS Lambda functions' code is stored
   lambda_zip_filename = "lambdas.zip"
 
-  // list of simple rest lambda functions obtained by excluding the complex ones from the full set
+  // List of all available Lambda functions. These are retrieved by calling external data source "get_lambda_list"
   lambda_functions = keys(data.external.get_lambda_list.result)
 
-  // hash of the source code for the lambda
+  // Hash of the source code retrieved from external data source "get_lambda_source_code_hash"
   lambda_source_code_hash =  data.external.get_lambda_source_code_hash.result["source_code_hash"]
 
-  // list of complex lambda functions
+  // List of complex lambda functions. Currently, this list is manually maintained
   lambda_complex_functions = []
 
-  // list of simple rest lambda functions
+  // List of simple rest lambda functions. This list is derived by excluding the complex functions from the list of all lambda functions
   lambda_simple_rest_functions = setsubtract(local.lambda_functions, local.lambda_complex_functions)
 }

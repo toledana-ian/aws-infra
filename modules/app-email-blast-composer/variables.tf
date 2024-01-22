@@ -1,7 +1,3 @@
-variable "tags" {
-  description = "A map of tags that will be added to the resources created by this module"
-}
-
 variable "name" {
   type = string
   description = "The name that will be assigned to the resources created by this module"
@@ -17,16 +13,6 @@ variable "route_app_sub_domain_name" {
   description = "The subdomain name for the app route"
 }
 
-variable "route_api_sub_domain_name" {
-  type = string
-  description = "The subdomain name for the api route"
-}
-
-variable "route_auth_sub_domain_name" {
-  type = string
-  description = "The subdomain name for the cognito route"
-}
-
 variable "route_zone_id" {
   type = string
   description = "The ID of the zone in which the route is defined"
@@ -37,7 +23,6 @@ variable "acm_certificate_arn" {
   description = "The ARN of the ACM certificate"
 }
 
-variable "environment" {
-  type = string
-  description = "The current environment of this module"
+variable "tags" {
+  description = "A map of tags that will be added to the resources created by this module"
 }

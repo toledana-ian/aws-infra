@@ -1,3 +1,5 @@
+//########## LAMBDA ROLE ##########
+
 resource "aws_iam_role" "lambda" {
   name = "${var.name}-lambda"
 
@@ -12,23 +14,6 @@ resource "aws_iam_role" "lambda" {
           Service = "lambda.amazonaws.com"
         }
       }
-    ]
-  })
-}
-
-resource "aws_iam_role" "api_gateway" {
-  name = "${var.name}-api-gateway"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = "sts:AssumeRole",
-        Effect = "Allow",
-        Principal = {
-          Service = "apigateway.amazonaws.com"
-        }
-      },
     ]
   })
 }
@@ -61,6 +46,25 @@ resource "aws_iam_role_policy" "lambda_access_secret_manager" {
         "Action": "secretsmanager:GetSecretValue",
         "Resource": aws_secretsmanager_secret.sendgrid.arn
       }
+    ]
+  })
+}
+
+//########## API GATEWAY ROLE ##########
+
+resource "aws_iam_role" "api_gateway" {
+  name = "${var.name}-api-gateway"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "apigateway.amazonaws.com"
+        }
+      },
     ]
   })
 }
