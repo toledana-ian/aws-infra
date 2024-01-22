@@ -10,7 +10,7 @@ resource "aws_lambda_function" "simple_rest" {
   timeout = 10
 
   source_code_hash = local.lambda_source_code_hash
-  role             = aws_iam_role.api.arn
+  role             = aws_iam_role.lambda.arn
 
   tags = var.tags
 }

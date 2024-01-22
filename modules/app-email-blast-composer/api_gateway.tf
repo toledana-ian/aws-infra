@@ -1,3 +1,7 @@
+resource "aws_api_gateway_account" "example" {
+  cloudwatch_role_arn = aws_iam_role.api_gateway.arn
+}
+
 resource "aws_api_gateway_rest_api" "api" {
   name        = var.name
   description = "Lambda API of ${var.name}"
@@ -12,7 +16,31 @@ resource "aws_api_gateway_deployment" "api" {
     aws_api_gateway_integration.simple_rest
   ]
   rest_api_id = aws_api_gateway_rest_api.api.id
-  stage_name  = "default"
+}
+
+resource "aws_api_gateway_stage" "api" {
+  stage_name    = "default"
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  deployment_id = aws_api_gateway_deployment.api.id
+
+  xray_tracing_enabled = true
+
+  # Enable logging
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_gateway.arn
+    format          = jsonencode({
+      "requestId" : "$context.requestId",
+      "ip" : "$context.identity.sourceIp",
+      "caller" : "$context.identity.caller",
+      "user" : "$context.identity.user",
+      "requestTime" : "$context.requestTime",
+      "httpMethod" : "$context.httpMethod",
+      "resourcePath" : "$context.resourcePath",
+      "status" : "$context.status",
+      "protocol" : "$context.protocol",
+      "responseLength" : "$context.responseLength"
+    })
+  }
 }
 
 //########## API ROOT RESOURCE ##########
