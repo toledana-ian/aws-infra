@@ -12,6 +12,12 @@ resource "aws_lambda_function" "simple_rest" {
   source_code_hash = local.lambda_source_code_hash
   role             = aws_iam_role.lambda.arn
 
+  environment {
+    variables = {
+      SENDGRID_SECRET_NAME = aws_secretsmanager_secret.sendgrid.name
+    }
+  }
+
   tags = var.tags
 }
 
