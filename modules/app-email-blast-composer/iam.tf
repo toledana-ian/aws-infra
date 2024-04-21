@@ -44,7 +44,9 @@ resource "aws_iam_role_policy" "lambda_access_secret_manager" {
       {
         "Effect": "Allow",
         "Action": "secretsmanager:GetSecretValue",
-        "Resource": aws_secretsmanager_secret.sendgrid.arn
+        "Resource": [
+          aws_secretsmanager_secret.sendgrid.arn
+        ]
       }
     ]
   })
