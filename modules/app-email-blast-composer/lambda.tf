@@ -48,6 +48,8 @@ resource "aws_lambda_function" "cloudfront_basic_auth" {
 }
 
 resource "aws_lambda_permission" "cloudfront_basic_auth_execution" {
+  provider = aws.us_east_1
+
   statement_id  = "AllowExecutionFromCloudFront"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.cloudfront_basic_auth.function_name

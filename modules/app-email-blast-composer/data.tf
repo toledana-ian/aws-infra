@@ -40,6 +40,8 @@ data "archive_file" "lambda_cloudfront_basic_auth_source_code"{
 
         return response;
       }
+
+      module.exports.handler = handler;
     EOF
   }
 }
