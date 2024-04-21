@@ -41,8 +41,8 @@ resource "aws_lambda_function" "cloudfront_basic_auth" {
   role    = aws_iam_role.lambda_edge.arn
   publish = true
 
-  filename = data.archive_file.lambda_cloudfront_basic_auth_soruce_code.output_path
-  source_code_hash = data.archive_file.lambda_cloudfront_basic_auth_soruce_code.output_base64sha256
+  filename = data.archive_file.lambda_cloudfront_basic_auth_source_code.output_path
+  source_code_hash = data.archive_file.lambda_cloudfront_basic_auth_source_code.output_base64sha256
 
   tags = var.tags
 }
