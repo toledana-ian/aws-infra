@@ -50,7 +50,8 @@ resource "aws_cloudfront_distribution" "app" {
 
     lambda_function_association {
       event_type = "viewer-request"
-      lambda_arn = "${aws_lambda_function.cloudfront_basic_auth.arn}:${aws_lambda_function.cloudfront_basic_auth.version}"
+      lambda_arn = aws_lambda_function.cloudfront_basic_auth.qualified_arn
+      include_body = false
     }
 
     viewer_protocol_policy = "redirect-to-https"

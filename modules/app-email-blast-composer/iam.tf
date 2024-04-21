@@ -79,6 +79,25 @@ resource "aws_iam_role" "lambda_edge" {
   })
 }
 
+resource "aws_iam_role_policy" "lambda_edge_allow_logs" {
+  role   = aws_iam_role.lambda_edge.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+        ],
+        Effect = "Allow",
+        Resource = "*"
+      },
+    ]
+  })
+}
+
 //########## API GATEWAY ROLE ##########
 
 resource "aws_iam_role" "api_gateway" {

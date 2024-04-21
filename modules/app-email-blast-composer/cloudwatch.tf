@@ -5,6 +5,15 @@ resource "aws_cloudwatch_log_group" "api_gateway" {
   tags = var.tags
 }
 
+resource "aws_cloudwatch_log_group" "cloudfront_lambda" {
+  provider = aws.us_east_1
+
+  name              = "/aws/lambda/${aws_lambda_function.cloudfront_basic_auth.function_name}"
+  retention_in_days = 1
+
+  tags = var.tags
+}
+
 resource "aws_cloudwatch_log_group" "simple_rest" {
   for_each = toset(local.lambda_simple_rest_functions)
 
