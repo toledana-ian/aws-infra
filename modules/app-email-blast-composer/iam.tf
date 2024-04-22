@@ -55,6 +55,8 @@ resource "aws_iam_role_policy" "lambda_access_secret_manager" {
 //########## LAMBDA EDGE ROLE ##########
 
 resource "aws_iam_role" "lambda_edge" {
+  provider = aws.us_east_1
+
   name = "${var.name}-lambda-edge"
 
   assume_role_policy = jsonencode({
@@ -79,6 +81,8 @@ resource "aws_iam_role" "lambda_edge" {
 }
 
 resource "aws_iam_role_policy" "lambda_edge_allow_logs" {
+  provider = aws.us_east_1
+
   role   = aws_iam_role.lambda_edge.id
   policy = jsonencode({
     Version = "2012-10-17",
