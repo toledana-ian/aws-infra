@@ -21,10 +21,10 @@ data "archive_file" "lambda_cloudfront_basic_auth_source_code" {
         var authHeader = request.headers['authorization'];
         var expected = "Basic ZHluYW06JiFlJTNONWRkJHgza150OQ==";
 
-        if (!authHeaders || !authHeaders[0] || authHeaders[0].value !== expected) {
+        if (!authHeader || !authHeader[0] || authHeader[0].value !== expected) {
           var unauthorizedResponse = {
             status: '401',
-            statusDescription: 'Unauthorized'
+            statusDescription: 'Unauthorized',
             headers: {
               'www-authenticate': [{
                   key: 'WWW-Authenticate',
