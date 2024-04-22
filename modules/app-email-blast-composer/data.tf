@@ -18,21 +18,28 @@ data "archive_file" "lambda_cloudfront_basic_auth_source_code" {
     content  = <<-EOF
       exports.handler = (event, context, callback) => {
         var request = event.Records[0].cf.request;
-        var authHeaders = request.headers.authorization;
+        var authHeader = request.headers['authorization'];
         var expected = "Basic ZHluYW06JiFlJTNONWRkJHgza150OQ==";
 
-        if (authHeaders.value !== expected) {
-          var response = {
-            status: '200',
-            statusDescription: 'OK'
+        if (!authHeaders || !authHeaders[0] || authHeaders[0].value !== expected) {
+          var unauthorizedResponse = {
+            status: '401',
+            statusDescription: 'Unauthorized'
             headers: {
               'www-authenticate': [{
                   key: 'WWW-Authenticate',
                   value: 'Basic realm="Enter credentials for this super secure site"'
               }],
+              'content-type': [{
+                  key: 'Content-Type',
+                  value: 'text/html'
+              }]
             },
+            body: 'Unauthorized access'
           };
-          callback(null, response);
+          callback(null, unauthorizedResponse);
+        } else {
+          callback(null, request);
         }
       };
     EOF
