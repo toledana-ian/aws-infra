@@ -14,7 +14,7 @@ data "archive_file" "lambda_cloudfront_basic_auth_source_code"{
     content  = <<-EOF
       function handler(event) {
         var errorResponse = {
-          statusCode: 401,
+          status: 401,
           statusDescription: "Unauthorized",
           headers: {
             "www-authenticate": {
@@ -23,24 +23,21 @@ data "archive_file" "lambda_cloudfront_basic_auth_source_code"{
           },
         };
 
-        var request = event.request;
+        const request = event.Records[0].cf.request;
 
         if (!request || !request.headers) {
           return errorResponse;
         }
 
-        var authHeaders = request.headers.authorization;
+        // Extract the authorization header
+        const authHeaders = request.headers['authorization'];
 
-        if (!authHeaders || authHeaders.value !== "Basic ZHluYW06JiFlJTNONWRkJHgza150OQ==") {
-          return errorResponse;
+        // Check the authorization header against the expected value
+        if (!authHeaders || !authHeaders[0] || authHeaders[0].value !== "Basic ZHluYW06JiFlJTNONWRkJHgza150OQ==") {
+            return errorResponse;
         }
 
-        return {
-          statusCode: 200,
-          statusDescription: 'OK',
-          headers: request.headers,
-          body: request.body,
-        };
+        return request;
       }
 
       module.exports.handler = handler;
