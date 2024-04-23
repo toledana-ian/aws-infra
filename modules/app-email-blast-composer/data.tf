@@ -18,22 +18,17 @@ data "archive_file" "lambda_cloudfront_basic_auth_source_code" {
     content  = <<-EOF
       const crypto = require('crypto');
 
-      const credentialsStore = {
-        "username1": "password1",
-        "username2": "password2"
-      };
-
       exports.handler = (event, context, callback) => {
         var request = event.Records[0].cf.request;
         var authHeader = request.headers['authorization'];
         var expectedValue = '';
 
-        if (!authHeader || !authHeader[0]) {
+        if (!authHeader || !authHeader[0] || !process.env.DIGEST_CREDENTIALS_STORE) {
           return sendUnauthorizedResponse(callback);
         }
 
         const credentials = parseDigestHeader(authHeader[0].value);
-        const password = credentialsStore[credentials.username];
+        const password = process.env.DIGEST_CREDENTIALS_STORE[credentials.username];
 
         if (!password) {
           return sendUnauthorizedResponse(callback);
