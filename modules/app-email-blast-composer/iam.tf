@@ -52,55 +52,6 @@ resource "aws_iam_role_policy" "lambda_access_secret_manager" {
   })
 }
 
-//########## LAMBDA EDGE ROLE ##########
-
-resource "aws_iam_role" "lambda_edge" {
-  provider = aws.us_east_1
-
-  name = "${var.name}-lambda-edge"
-
-  assume_role_policy = jsonencode({
-    Version   = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        }
-      },
-      {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
-        Principal = {
-          Service = "edgelambda.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy" "lambda_edge_allow_logs" {
-  provider = aws.us_east_1
-
-  role   = aws_iam_role.lambda_edge.id
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents",
-          "logs:DescribeLogStreams"
-        ],
-        Effect = "Allow",
-        Resource = "*"
-      },
-    ]
-  })
-}
-
 //########## API GATEWAY ROLE ##########
 
 resource "aws_iam_role" "api_gateway" {

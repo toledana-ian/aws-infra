@@ -48,10 +48,9 @@ resource "aws_cloudfront_distribution" "app" {
       }
     }
 
-    lambda_function_association {
-      event_type = "viewer-request"
-      lambda_arn = aws_lambda_function.cloudfront_basic_auth.qualified_arn
-      include_body = false
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.digest_authentication.arn
     }
 
     viewer_protocol_policy = "redirect-to-https"
@@ -89,4 +88,105 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   tags = var.tags
+}
+
+resource "aws_cloudfront_function" "digest_authentication" {
+  name    = "${var.name}-digest-authentication"
+  runtime = "cloudfront-js-2.0"
+  code    = <<-EOF
+    const crypto = require('crypto');
+
+    const credentialsStore = {
+      "username1": "password1",
+      "username2": "password2"
+    };
+
+    function handler(event) {
+      var request = event.request;
+      var authHeaders = request.headers['authorization'];
+
+      if (!authHeaders || !authHeaders.value) {
+        return sendUnauthorizedResponse();
+      }
+
+      const credentials = parseDigestHeader(authHeaders.value);
+      const password = credentialsStore[credentials.username];
+
+      if (!password) {
+        return sendUnauthorizedResponse();
+      }
+
+      const expectedResponse = generateDigestResponse(credentials, 'GET', password);
+
+      if (credentials.response !== expectedResponse) {
+        return sendUnauthorizedResponse();
+      }
+
+      return request;
+    }
+
+    function parseDigestHeader(header) {
+      const parts = header.slice(7).split(',').reduce((acc, current) => {
+        const splitPoint = current.trim().indexOf('='); // Find the index of the first equals sign
+        const key = current.trim().substring(0, splitPoint); // Extract the key
+        const value = current.trim().substring(splitPoint + 1).replace(/"/g, ''); // Extract the value, removing quotes
+        acc[key] = value;
+        return acc;
+      }, {});
+
+      return parts;
+    }
+
+    function generateDigestResponse(credentials, method, password) {
+      var username = credentials.username;
+      var realm = credentials.realm;
+      var nonce = credentials.nonce;
+      var uri = credentials.uri;
+      var qop = credentials.qop;
+      var nc = credentials.nc;
+      var cnonce = credentials.cnonce;
+
+      var ha1 = crypto.createHash('md5').update(username + ':' + realm + ':' + password).digest('hex');
+      var ha2 = crypto.createHash('md5').update(method + ':' + uri).digest('hex');
+      var response = crypto.createHash('md5').update(ha1 + ':' + nonce + ':' + nc + ':' + cnonce + ':' + qop + ':' + ha2).digest('hex');
+      return response;
+    }
+
+    function sendUnauthorizedResponse() {
+      var nonce = generateNonce();
+      var opaque = generateOpaque();
+      var unauthorizedResponse = {
+        statusCode: 401,
+        statusDescription: 'Unauthorized',
+        headers: {
+          'www-authenticate': {
+            value: 'Digest realm="Access to the site", qop="auth", nonce="'+nonce+'", opaque="'+opaque+'"'
+          },
+          'content-type': {
+            value: 'text/html'
+          }
+        },
+        body: 'Unauthorized access.'
+      };
+      return unauthorizedResponse;
+    }
+
+    function generateRandomString(length) {
+      var result = '';
+      var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      var charactersLength = characters.length;
+      for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+      return result;
+    }
+
+    function generateOpaque() {
+      return generateRandomString(16);
+    }
+
+    function generateNonce() {
+      return generateRandomString(32);
+    }
+  EOF
 }
