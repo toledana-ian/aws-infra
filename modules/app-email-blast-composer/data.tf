@@ -95,15 +95,11 @@ data "archive_file" "lambda_cloudfront_basic_auth_source_code" {
       }
 
       function generateOpaque() {
-        //return crypto.randomBytes(16).toString('hex');
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        return today.getTime();
+        return crypto.randomBytes(16).toString('hex');
       }
 
       function generateNonce() {
-        //return crypto.randomBytes(16).toString('hex');
-        return generateOpaque();
+        return crypto.randomBytes(16).toString('hex');
       }
     EOF
   }
