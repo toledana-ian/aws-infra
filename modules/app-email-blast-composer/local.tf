@@ -13,4 +13,7 @@ locals {
 
   // List of simple rest lambda functions. This list is derived by excluding the complex functions from the list of all lambda functions
   lambda_simple_rest_functions = setsubtract(local.lambda_functions, local.lambda_complex_functions)
+
+  // Get the  last segment of the ARN of the credentials_store of aws_cloudfront_key_value_store
+  aws_cloudfront_key_value_store_credentials_store_id = element(split("/", aws_cloudfront_key_value_store.credentials_store.arn), length(split("/", aws_cloudfront_key_value_store.credentials_store.arn)) - 1)
 }

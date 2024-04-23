@@ -90,18 +90,25 @@ resource "aws_cloudfront_distribution" "app" {
   tags = var.tags
 }
 
+resource "aws_cloudfront_key_value_store" "credentials_store" {
+  name = "${var.name}-credentials-store"
+}
+
 resource "aws_cloudfront_function" "digest_authentication" {
   name    = "${var.name}-digest-authentication"
   runtime = "cloudfront-js-2.0"
-  code    = <<-EOF
+
+  key_value_store_associations = [
+    aws_cloudfront_key_value_store.credentials_store.arn
+  ]
+
+  code = <<-EOF
     const crypto = require('crypto');
+    const cf = require('cloudfront');
 
-    const credentialsStore = {
-      "username1": "password1",
-      "username2": "password2"
-    };
+    const credentialsStore = cf.kvs("${local.aws_cloudfront_key_value_store_credentials_store_id}");
 
-    function handler(event) {
+    async function handler(event) {
       var request = event.request;
       var authHeaders = request.headers['authorization'];
 
@@ -110,9 +117,11 @@ resource "aws_cloudfront_function" "digest_authentication" {
       }
 
       const credentials = parseDigestHeader(authHeaders.value);
-      const password = credentialsStore[credentials.username];
 
-      if (!password) {
+      let password = "";
+      try{
+        password = await credentialsStore.get(credentials.username);
+      } catch(_){
         return sendUnauthorizedResponse();
       }
 
