@@ -26,3 +26,8 @@ variable "acm_certificate_arn" {
 variable "tags" {
   description = "A map of tags that will be added to the resources created by this module"
 }
+
+variable "enable_digest_authentication" {
+  type    = bool
+  description = "Determines if Digest Authentication should be enabled for viewer requests in the CloudFront distribution."
+}

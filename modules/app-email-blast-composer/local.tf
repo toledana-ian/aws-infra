@@ -6,7 +6,7 @@ locals {
   lambda_functions = keys(data.external.get_lambda_list.result)
 
   // Hash of the source code retrieved from external data source "get_lambda_source_code_hash"
-  lambda_source_code_hash =  data.external.get_lambda_source_code_hash.result["source_code_hash"]
+  lambda_source_code_hash = data.external.get_lambda_source_code_hash.result["source_code_hash"]
 
   // List of complex lambda functions. Currently, this list is manually maintained
   lambda_complex_functions = []
@@ -15,5 +15,5 @@ locals {
   lambda_simple_rest_functions = setsubtract(local.lambda_functions, local.lambda_complex_functions)
 
   // Get the  last segment of the ARN of the credentials_store of aws_cloudfront_key_value_store
-  aws_cloudfront_key_value_store_credentials_store_id = element(split("/", aws_cloudfront_key_value_store.credentials_store.arn), length(split("/", aws_cloudfront_key_value_store.credentials_store.arn)) - 1)
+  aws_cloudfront_key_value_store_credentials_store_id = var.enable_digest_authentication ? element(split("/", aws_cloudfront_key_value_store.credentials_store[0].arn), length(split("/", aws_cloudfront_key_value_store.credentials_store[0].arn)) - 1) : ""
 }

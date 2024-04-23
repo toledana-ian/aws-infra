@@ -48,9 +48,12 @@ resource "aws_cloudfront_distribution" "app" {
       }
     }
 
-    function_association {
-      event_type   = "viewer-request"
-      function_arn = aws_cloudfront_function.digest_authentication.arn
+    dynamic "function_association" {
+      for_each = var.enable_digest_authentication ? [1] : []
+      content {
+        event_type   = "viewer-request"
+        function_arn = aws_cloudfront_function.digest_authentication[0].arn
+      }
     }
 
     viewer_protocol_policy = "redirect-to-https"
@@ -91,15 +94,17 @@ resource "aws_cloudfront_distribution" "app" {
 }
 
 resource "aws_cloudfront_key_value_store" "credentials_store" {
+  count = var.enable_digest_authentication ? 1 : 0
   name = "${var.name}-credentials-store"
 }
 
 resource "aws_cloudfront_function" "digest_authentication" {
+  count = var.enable_digest_authentication ? 1 : 0
   name    = "${var.name}-digest-authentication"
   runtime = "cloudfront-js-2.0"
 
   key_value_store_associations = [
-    aws_cloudfront_key_value_store.credentials_store.arn
+    aws_cloudfront_key_value_store.credentials_store[0].arn
   ]
 
   code = <<-EOF
