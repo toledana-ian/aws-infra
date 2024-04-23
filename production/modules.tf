@@ -2,7 +2,7 @@ module "app-email-blast-composer" {
   source = "../modules/app-email-blast-composer"
   name   = "prod-email-blast-composer"
 
-  enable_digest_authentication = false
+  enable_digest_authentication = true
 
   route_app_sub_domain_name = "dynamdev-email-blast-composer"
   route_domain_name         = data.terraform_remote_state.global.outputs.route53_zone_name_christiantoledana_com
