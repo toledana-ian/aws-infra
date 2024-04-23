@@ -9,9 +9,26 @@ resource "aws_secretsmanager_secret" "sendgrid" {
   tags = var.tags
 }
 
-resource "aws_secretsmanager_secret_version" "example" {
+resource "aws_secretsmanager_secret_version" "sendgrid_initial_values" {
   secret_id     = aws_secretsmanager_secret.sendgrid.id
   secret_string = jsonencode({
     API_KEY: "replace this value in AWS Secrets Manager UI"
+  })
+}
+
+resource "aws_secretsmanager_secret" "digest_authentication" {
+  provider = aws.us_east_1
+
+  name="${var.name}-digest-authentication"
+
+  tags = var.tags
+}
+
+resource "aws_secretsmanager_secret_version" "digest_authentication_initial_values" {
+  provider = aws.us_east_1
+
+  secret_id     = aws_secretsmanager_secret.digest_authentication.id
+  secret_string = jsonencode({
+    "username": "password"
   })
 }

@@ -17,18 +17,25 @@ data "archive_file" "lambda_cloudfront_basic_auth_source_code" {
     filename = "index.js"
     content  = <<-EOF
       const crypto = require('crypto');
+      const AWS = require('aws-sdk');
+      const secretsManager = new AWS.SecretsManager();
+      const DIGEST_AUTHENTICATION_SECRET_NAME = '${aws_secretsmanager_secret.digest_authentication.name}';
 
       exports.handler = (event, context, callback) => {
         var request = event.Records[0].cf.request;
         var authHeader = request.headers['authorization'];
         var expectedValue = '';
 
-        if (!authHeader || !authHeader[0] || !process.env.DIGEST_CREDENTIALS_STORE) {
+        if (!authHeader || !authHeader[0]) {
           return sendUnauthorizedResponse(callback);
         }
 
+        const credentialsStore = await secretsManager.getSecretValue({
+          SecretId: DIGEST_AUTHENTICATION_SECRET_NAME
+        }).promise();
+
         const credentials = parseDigestHeader(authHeader[0].value);
-        const password = process.env.DIGEST_CREDENTIALS_STORE[credentials.username];
+        const password = JSON.parse(credentialsStore)[credentials.username];
 
         if (!password) {
           return sendUnauthorizedResponse(callback);
