@@ -74,14 +74,6 @@ resource "aws_cloudfront_distribution" "app" {
       }
     }
 
-    dynamic "function_association" {
-      for_each = var.enable_digest_authentication ? [1] : []
-      content {
-        event_type   = "viewer-request"
-        function_arn = aws_cloudfront_function.digest_authentication[0].arn
-      }
-    }
-
     viewer_protocol_policy = "redirect-to-https"
   }
 
