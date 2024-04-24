@@ -169,7 +169,7 @@ resource "aws_cloudfront_function" "digest_authentication" {
     function sendUnauthorizedResponse() {
       var nonce = generateNonce();
       var opaque = generateOpaque();
-      var unauthorizedResponse = {
+      var unauthorizedResponse = {git
         statusCode: 401,
         statusDescription: 'Unauthorized',
         headers: {
