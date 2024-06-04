@@ -1,4 +1,4 @@
-resource "aws_lambda_function" "nextjs_api" {
+resource "aws_lambda_function" "lambda_rest" {
   count = var.is_lamba_zip_uploaded ? 1 : 0
 
   function_name = "${var.name}-nextjs-api"
@@ -15,12 +15,12 @@ resource "aws_lambda_function" "nextjs_api" {
   tags = var.tags
 }
 
-resource "aws_lambda_permission" "apigw_lambda" {
+resource "aws_lambda_permission" "lambda_rest" {
   count        = var.is_lamba_zip_uploaded ? 1 : 0
 
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.nextjs_api[1].function_name
+  function_name = aws_lambda_function.lambda_rest[1].function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.nextjs_api.execution_arn}/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
 }

@@ -1,18 +1,19 @@
-resource "aws_apigatewayv2_api" "nextjs_api" {
-  name          = "nextjs-api-gateway"
-  protocol_type = "HTTP"
-}
+resource "aws_api_gateway_rest_api" "api" {
+  name        = var.name
+  description = "Lambda API of ${var.name}"
 
+  tags = var.tags
+}
 
 //########## API DEPLOYMENT ##########
 
 resource "aws_api_gateway_deployment" "api" {
-  rest_api_id = aws_apigatewayv2_api.nextjs_api.id
+  rest_api_id = aws_api_gateway_rest_api.api.id
 }
 
 resource "aws_api_gateway_stage" "api" {
   stage_name    = "default"
-  rest_api_id   = aws_apigatewayv2_api.nextjs_api.id
+  rest_api_id   = aws_api_gateway_rest_api.api.id
   deployment_id = aws_api_gateway_deployment.api.id
 
   xray_tracing_enabled = true
@@ -37,18 +38,38 @@ resource "aws_api_gateway_stage" "api" {
 
 //########## API ROOT RESOURCE ##########
 
-resource "aws_apigatewayv2_integration" "lambda_integration" {
-  count        = var.is_lamba_zip_uploaded ? 1 : 0
-
-  api_id = aws_apigatewayv2_api.nextjs_api.id
-  integration_type = "AWS_PROXY"
-  integration_uri = aws_lambda_function.nextjs_api[1].arn
+resource "aws_api_gateway_resource" "api" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "api"
 }
 
-resource "aws_apigatewayv2_route" "default_route" {
-  count        = var.is_lamba_zip_uploaded ? 1 : 0
+//########## LAMBDA REST RESOURCE ##########
 
-  api_id = aws_apigatewayv2_api.nextjs_api.id
-  route_key = "ANY /{proxy+}"
-  target = "integrations/${aws_apigatewayv2_integration.lambda_integration[1].id}"
+resource "aws_api_gateway_resource" "lambda_rest" {
+  count = var.is_lamba_zip_uploaded ? 1 : 0
+
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_resource.api.id
+  path_part   = "*"
+}
+
+resource "aws_api_gateway_method" "lambda_rest" {
+  count = var.is_lamba_zip_uploaded ? 1 : 0
+
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.lambda_rest[1].id
+  http_method   = "ANY"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "lambda_rest" {
+  count = var.is_lamba_zip_uploaded ? 1 : 0
+
+  rest_api_id             = aws_api_gateway_rest_api.api.id
+  resource_id             = aws_api_gateway_resource.lambda_rest[1].id
+  http_method             = aws_api_gateway_method.lambda_rest[1].http_method
+  integration_http_method = "ANY"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.lambda_rest[1].invoke_arn
 }
