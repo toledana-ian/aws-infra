@@ -1,0 +1,82 @@
+resource "aws_api_gateway_account" "example" {
+  cloudwatch_role_arn = aws_iam_role.api_gateway.arn
+}
+
+resource "aws_api_gateway_rest_api" "api" {
+  name        = var.name
+  description = "Lambda API of ${var.name}"
+
+  tags = var.tags
+}
+
+//########## API DEPLOYMENT ##########
+
+resource "aws_api_gateway_deployment" "api" {
+  depends_on = [
+    aws_api_gateway_integration.simple_rest
+  ]
+  rest_api_id = aws_api_gateway_rest_api.api.id
+}
+
+resource "aws_api_gateway_stage" "api" {
+  stage_name    = "default"
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  deployment_id = aws_api_gateway_deployment.api.id
+
+  xray_tracing_enabled = true
+
+  # Enable logging
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_gateway.arn
+    format          = jsonencode({
+      "requestId" : "$context.requestId",
+      "ip" : "$context.identity.sourceIp",
+      "caller" : "$context.identity.caller",
+      "user" : "$context.identity.user",
+      "requestTime" : "$context.requestTime",
+      "httpMethod" : "$context.httpMethod",
+      "resourcePath" : "$context.resourcePath",
+      "status" : "$context.status",
+      "protocol" : "$context.protocol",
+      "responseLength" : "$context.responseLength"
+    })
+  }
+}
+
+//########## API ROOT RESOURCE ##########
+
+resource "aws_api_gateway_resource" "api" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "api"
+}
+
+//########## SIMPLE REST RESOURCE ##########
+
+resource "aws_api_gateway_resource" "simple_rest" {
+  for_each = toset(local.lambda_simple_rest_functions)
+
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_resource.api.id
+  path_part   = each.value
+}
+
+resource "aws_api_gateway_method" "simple_rest" {
+  for_each = toset(local.lambda_simple_rest_functions)
+
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.simple_rest[each.value].id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "simple_rest" {
+  for_each = toset(local.lambda_simple_rest_functions)
+
+  rest_api_id             = aws_api_gateway_rest_api.api.id
+  resource_id             = aws_api_gateway_resource.simple_rest[each.value].id
+  http_method             = aws_api_gateway_method.simple_rest[each.value].http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.simple_rest[each.value].invoke_arn
+}
