@@ -1,7 +1,3 @@
-resource "aws_api_gateway_account" "nextjs_api" {
-  cloudwatch_role_arn = aws_iam_role.api_gateway.arn
-}
-
 resource "aws_apigatewayv2_api" "nextjs_api" {
   name          = "nextjs-api-gateway"
   protocol_type = "HTTP"
@@ -42,13 +38,17 @@ resource "aws_api_gateway_stage" "api" {
 //########## API ROOT RESOURCE ##########
 
 resource "aws_apigatewayv2_integration" "lambda_integration" {
+  count        = local.is_lambda_zip_file_exists != "" ? 1 : 0
+
   api_id = aws_apigatewayv2_api.nextjs_api.id
   integration_type = "AWS_PROXY"
-  integration_uri = aws_lambda_function.nextjs_api.arn
+  integration_uri = aws_lambda_function.nextjs_api[1].arn
 }
 
 resource "aws_apigatewayv2_route" "default_route" {
+  count        = local.is_lambda_zip_file_exists != "" ? 1 : 0
+
   api_id = aws_apigatewayv2_api.nextjs_api.id
   route_key = "ANY /{proxy+}"
-  target = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
+  target = "integrations/${aws_apigatewayv2_integration.lambda_integration[1].id}"
 }
