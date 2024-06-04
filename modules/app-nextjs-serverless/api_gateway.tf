@@ -1,26 +1,22 @@
-resource "aws_api_gateway_account" "example" {
+resource "aws_api_gateway_account" "nextjs_api" {
   cloudwatch_role_arn = aws_iam_role.api_gateway.arn
 }
 
-resource "aws_api_gateway_rest_api" "api" {
-  name        = var.name
-  description = "Lambda API of ${var.name}"
-
-  tags = var.tags
+resource "aws_apigatewayv2_api" "nextjs_api" {
+  name          = "nextjs-api-gateway"
+  protocol_type = "HTTP"
 }
+
 
 //########## API DEPLOYMENT ##########
 
 resource "aws_api_gateway_deployment" "api" {
-  depends_on = [
-    aws_api_gateway_integration.simple_rest
-  ]
-  rest_api_id = aws_api_gateway_rest_api.api.id
+  rest_api_id = aws_apigatewayv2_api.nextjs_api.id
 }
 
 resource "aws_api_gateway_stage" "api" {
   stage_name    = "default"
-  rest_api_id   = aws_api_gateway_rest_api.api.id
+  rest_api_id   = aws_apigatewayv2_api.nextjs_api.id
   deployment_id = aws_api_gateway_deployment.api.id
 
   xray_tracing_enabled = true
@@ -45,38 +41,14 @@ resource "aws_api_gateway_stage" "api" {
 
 //########## API ROOT RESOURCE ##########
 
-resource "aws_api_gateway_resource" "api" {
-  rest_api_id = aws_api_gateway_rest_api.api.id
-  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
-  path_part   = "api"
+resource "aws_apigatewayv2_integration" "lambda_integration" {
+  api_id = aws_apigatewayv2_api.nextjs_api.id
+  integration_type = "AWS_PROXY"
+  integration_uri = aws_lambda_function.nextjs_api.arn
 }
 
-//########## SIMPLE REST RESOURCE ##########
-
-resource "aws_api_gateway_resource" "simple_rest" {
-  for_each = toset(local.lambda_simple_rest_functions)
-
-  rest_api_id = aws_api_gateway_rest_api.api.id
-  parent_id   = aws_api_gateway_resource.api.id
-  path_part   = each.value
-}
-
-resource "aws_api_gateway_method" "simple_rest" {
-  for_each = toset(local.lambda_simple_rest_functions)
-
-  rest_api_id   = aws_api_gateway_rest_api.api.id
-  resource_id   = aws_api_gateway_resource.simple_rest[each.value].id
-  http_method   = "POST"
-  authorization = "NONE"
-}
-
-resource "aws_api_gateway_integration" "simple_rest" {
-  for_each = toset(local.lambda_simple_rest_functions)
-
-  rest_api_id             = aws_api_gateway_rest_api.api.id
-  resource_id             = aws_api_gateway_resource.simple_rest[each.value].id
-  http_method             = aws_api_gateway_method.simple_rest[each.value].http_method
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.simple_rest[each.value].invoke_arn
+resource "aws_apigatewayv2_route" "default_route" {
+  api_id = aws_apigatewayv2_api.nextjs_api.id
+  route_key = "ANY /{proxy+}"
+  target = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }

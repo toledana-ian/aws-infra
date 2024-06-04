@@ -36,22 +36,6 @@ resource "aws_iam_role_policy" "lambda_allow_logs" {
   })
 }
 
-resource "aws_iam_role_policy" "lambda_access_secret_manager" {
-  role   = aws_iam_role.lambda.id
-  policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Effect": "Allow",
-        "Action": "secretsmanager:GetSecretValue",
-        "Resource": [
-          aws_secretsmanager_secret.sendgrid.arn
-        ]
-      }
-    ]
-  })
-}
-
 //########## API GATEWAY ROLE ##########
 
 resource "aws_iam_role" "api_gateway" {
