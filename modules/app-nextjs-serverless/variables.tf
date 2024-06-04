@@ -31,3 +31,9 @@ variable "enable_digest_authentication" {
   type    = bool
   description = "Determines if Digest Authentication should be enabled for viewer requests in the CloudFront distribution."
 }
+
+variable "is_lamba_zip_uploaded" {
+  type    = bool
+  default = false
+  description = "Default to false; set to true when the zip file is uploaded"
+}

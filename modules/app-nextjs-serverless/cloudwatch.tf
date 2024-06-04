@@ -6,7 +6,9 @@ resource "aws_cloudwatch_log_group" "api_gateway" {
 }
 
 resource "aws_cloudwatch_log_group" "nextjs_api" {
-  name              = "/aws/lambda/${aws_lambda_function.nextjs_api.function_name}"
+  count        = var.is_lamba_zip_uploaded ? 1 : 0
+
+  name              = "/aws/lambda/${aws_lambda_function.nextjs_api[1].function_name}"
   retention_in_days = 7
 
   tags = var.tags

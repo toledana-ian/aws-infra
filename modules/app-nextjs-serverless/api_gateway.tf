@@ -38,7 +38,7 @@ resource "aws_api_gateway_stage" "api" {
 //########## API ROOT RESOURCE ##########
 
 resource "aws_apigatewayv2_integration" "lambda_integration" {
-  count        = local.is_lambda_zip_file_exists != "" ? 1 : 0
+  count        = var.is_lamba_zip_uploaded ? 1 : 0
 
   api_id = aws_apigatewayv2_api.nextjs_api.id
   integration_type = "AWS_PROXY"
@@ -46,7 +46,7 @@ resource "aws_apigatewayv2_integration" "lambda_integration" {
 }
 
 resource "aws_apigatewayv2_route" "default_route" {
-  count        = local.is_lambda_zip_file_exists != "" ? 1 : 0
+  count        = var.is_lamba_zip_uploaded ? 1 : 0
 
   api_id = aws_apigatewayv2_api.nextjs_api.id
   route_key = "ANY /{proxy+}"
