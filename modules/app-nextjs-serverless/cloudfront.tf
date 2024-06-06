@@ -4,7 +4,8 @@ resource "aws_cloudfront_origin_access_identity" "app" {
 
 resource "aws_cloudfront_distribution" "app" {
   aliases = [
-    var.route_app_sub_domain_name == "" ? var.route_domain_name : format("%s.%s", var.route_app_sub_domain_name, var.route_domain_name)
+      var.route_app_sub_domain_name == "" ? var.route_domain_name :
+      format("%s.%s", var.route_app_sub_domain_name, var.route_domain_name)
   ]
 
   enabled             = true
@@ -22,16 +23,20 @@ resource "aws_cloudfront_distribution" "app" {
     }
   }
 
-  origin {
-    domain_name = split("/", aws_api_gateway_deployment.api.invoke_url)[2]
-    origin_id   = "${var.name}-api"
-    origin_path = "/default"
+  dynamic "origin" {
+    for_each = var.is_lamba_zip_uploaded ? [1] : []
 
-    custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
+    content {
+      domain_name = split("/", aws_api_gateway_deployment.api[1].invoke_url)[2]
+      origin_id   = "${var.name}-api"
+      origin_path = "/default"
+
+      custom_origin_config {
+        http_port              = 80
+        https_port             = 443
+        origin_protocol_policy = "https-only"
+        origin_ssl_protocols   = ["TLSv1.2"]
+      }
     }
   }
 
@@ -59,22 +64,25 @@ resource "aws_cloudfront_distribution" "app" {
     viewer_protocol_policy = "redirect-to-https"
   }
 
-  ordered_cache_behavior {
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods   = ["GET", "HEAD"]
-    path_pattern     = "/api/*"
-    target_origin_id = "${var.name}-api"
+  dynamic "ordered_cache_behavior" {
+    for_each = var.enable_digest_authentication ? [1] : []
+    content {
+      allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+      cached_methods   = ["GET", "HEAD"]
+      path_pattern     = "/api/*"
+      target_origin_id = "${var.name}-api"
 
-    forwarded_values {
-      query_string = true
-      headers      = ["Origin"]
+      forwarded_values {
+        query_string = true
+        headers      = ["Origin"]
 
-      cookies {
-        forward = "all"
+        cookies {
+          forward = "all"
+        }
       }
-    }
 
-    viewer_protocol_policy = "redirect-to-https"
+      viewer_protocol_policy = "redirect-to-https"
+    }
   }
 
   price_class = "PriceClass_100"
@@ -95,11 +103,11 @@ resource "aws_cloudfront_distribution" "app" {
 
 resource "aws_cloudfront_key_value_store" "credentials_store" {
   count = var.enable_digest_authentication ? 1 : 0
-  name = "${var.name}-credentials-store"
+  name  = "${var.name}-credentials-store"
 }
 
 resource "aws_cloudfront_function" "digest_authentication" {
-  count = var.enable_digest_authentication ? 1 : 0
+  count   = var.enable_digest_authentication ? 1 : 0
   name    = "${var.name}-digest-authentication"
   runtime = "cloudfront-js-2.0"
 
