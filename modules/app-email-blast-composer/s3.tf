@@ -1,5 +1,10 @@
+resource "random_string" "random_suffix" {
+  length  = 6
+  special = false
+}
+
 resource "aws_s3_bucket" "app" {
-  bucket = var.name
+  bucket = "${var.name}-${random_string.random_suffix.result}"
   tags   = var.tags
 }
 

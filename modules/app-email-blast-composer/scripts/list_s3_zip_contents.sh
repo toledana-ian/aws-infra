@@ -16,6 +16,9 @@ output=$(aws s3api head-object --bucket "${BUCKET_NAME}" --key "${ZIP_FILE_KEY}"
 if echo "$output" | grep -q "Not Found"; then
   echo "{}"
   exit 0
+elif echo "$output" | grep -q "Forbidden"; then
+  echo "{}"
+  exit 0
 fi
 
 # Function to convert filenames into a JSON object.

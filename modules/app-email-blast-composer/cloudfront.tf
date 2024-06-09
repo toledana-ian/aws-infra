@@ -22,16 +22,20 @@ resource "aws_cloudfront_distribution" "app" {
     }
   }
 
-  origin {
-    domain_name = split("/", aws_api_gateway_deployment.api.invoke_url)[2]
-    origin_id   = "${var.name}-api"
-    origin_path = "/default"
+  dynamic "origin" {
+    for_each = length(local.lambda_functions)!=0?[1]:[]
 
-    custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
+    content {
+      domain_name = split("/", aws_api_gateway_deployment.api[1].invoke_url)[2]
+      origin_id   = "${var.name}-api"
+      origin_path = "/default"
+
+      custom_origin_config {
+        http_port              = 80
+        https_port             = 443
+        origin_protocol_policy = "https-only"
+        origin_ssl_protocols   = ["TLSv1.2"]
+      }
     }
   }
 
@@ -59,22 +63,25 @@ resource "aws_cloudfront_distribution" "app" {
     viewer_protocol_policy = "redirect-to-https"
   }
 
-  ordered_cache_behavior {
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods   = ["GET", "HEAD"]
-    path_pattern     = "/api/*"
-    target_origin_id = "${var.name}-api"
+  dynamic "ordered_cache_behavior" {
+    for_each = length(local.lambda_functions)!=0?[1]:[]
+    content {
+      allowed_methods = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+      cached_methods = ["GET", "HEAD"]
+      path_pattern     = "/api/*"
+      target_origin_id = "${var.name}-api"
 
-    forwarded_values {
-      query_string = true
-      headers      = ["Origin"]
+      forwarded_values {
+        query_string = true
+        headers = ["Origin"]
 
-      cookies {
-        forward = "all"
+        cookies {
+          forward = "all"
+        }
       }
-    }
 
-    viewer_protocol_policy = "redirect-to-https"
+      viewer_protocol_policy = "redirect-to-https"
+    }
   }
 
   price_class = "PriceClass_100"

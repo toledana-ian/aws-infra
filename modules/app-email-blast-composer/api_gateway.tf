@@ -1,4 +1,4 @@
-resource "aws_api_gateway_account" "example" {
+resource "aws_api_gateway_account" "app" {
   cloudwatch_role_arn = aws_iam_role.api_gateway.arn
 }
 
@@ -12,16 +12,17 @@ resource "aws_api_gateway_rest_api" "api" {
 //########## API DEPLOYMENT ##########
 
 resource "aws_api_gateway_deployment" "api" {
-  depends_on = [
-    aws_api_gateway_integration.simple_rest
-  ]
+  count = length(local.lambda_functions)!=0 ? 1 : 0
+
   rest_api_id = aws_api_gateway_rest_api.api.id
 }
 
 resource "aws_api_gateway_stage" "api" {
+  count = length(local.lambda_functions)!=0 ? 1 : 0
+
   stage_name    = "default"
   rest_api_id   = aws_api_gateway_rest_api.api.id
-  deployment_id = aws_api_gateway_deployment.api.id
+  deployment_id = aws_api_gateway_deployment.api[1].id
 
   xray_tracing_enabled = true
 
@@ -46,6 +47,8 @@ resource "aws_api_gateway_stage" "api" {
 //########## API ROOT RESOURCE ##########
 
 resource "aws_api_gateway_resource" "api" {
+  count = length(local.lambda_functions)!=0 ? 1 : 0
+
   rest_api_id = aws_api_gateway_rest_api.api.id
   parent_id   = aws_api_gateway_rest_api.api.root_resource_id
   path_part   = "api"
@@ -57,7 +60,7 @@ resource "aws_api_gateway_resource" "simple_rest" {
   for_each = toset(local.lambda_simple_rest_functions)
 
   rest_api_id = aws_api_gateway_rest_api.api.id
-  parent_id   = aws_api_gateway_resource.api.id
+  parent_id   = aws_api_gateway_resource.api[1].id
   path_part   = each.value
 }
 
