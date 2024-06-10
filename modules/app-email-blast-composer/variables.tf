@@ -4,7 +4,7 @@ variable "name" {
 }
 
 variable "s3_random_suffix" {
-  description = "A random string suffix to ensure S3 bucket name uniqueness."
+  description = "A random string suffix to ensure S3 bucket name uniqueness. Only lowercase alphanumeric characters and hyphens."
   type        = string
 }
 
