@@ -1,4 +1,7 @@
 locals {
+  // Name of the s3 bucket by combining project name and s3 random string suffix
+  s3_bucket_name = "${var.name}-${var.s3_random_suffix}"
+
   // Name of the ZIP file where the AWS Lambda functions' code is stored
   lambda_zip_filename = "lambdas.zip"
 

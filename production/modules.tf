@@ -1,6 +1,7 @@
 module "app-email-blast-composer" {
   source = "../modules/app-email-blast-composer"
   name   = "prod-email-blast-composer"
+  s3_random_suffix = "KHJIUYI"
 
   enable_digest_authentication = true
 
