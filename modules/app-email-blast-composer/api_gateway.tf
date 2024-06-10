@@ -15,6 +15,8 @@ resource "aws_api_gateway_deployment" "api" {
   count = length(local.lambda_functions)!=0 ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api.id
+
+  depends_on = [aws_lambda_function.simple_rest]
 }
 
 resource "aws_api_gateway_stage" "api" {
@@ -52,6 +54,8 @@ resource "aws_api_gateway_resource" "api" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   parent_id   = aws_api_gateway_rest_api.api.root_resource_id
   path_part   = "api"
+
+  depends_on = [aws_lambda_function.simple_rest]
 }
 
 //########## SIMPLE REST RESOURCE ##########
