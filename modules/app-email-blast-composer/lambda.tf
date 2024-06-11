@@ -9,7 +9,7 @@ resource "aws_lambda_function" "simple_rest" {
   handler = "${each.value}.handler"
   timeout = 10
 
-  source_code_hash = filebase64sha256(data.aws_s3_object.lambda_zip.body)
+  source_code_hash = filebase64sha256(data.aws_s3_object.lambda_zip[1].body)
   role             = aws_iam_role.lambda.arn
 
   environment {
