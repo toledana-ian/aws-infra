@@ -3,8 +3,8 @@ variable "name" {
   description = "The name that will be assigned to the resources created by this module"
 }
 
-variable "s3_random_suffix" {
-  description = "A random string suffix to ensure S3 bucket name uniqueness. Only lowercase alphanumeric characters and hyphens."
+variable "random_suffix" {
+  description = "A random string suffix to ensure S3 bucket name and secret's manager uniqueness. Only lowercase alphanumeric characters and hyphens."
   type        = string
 }
 
