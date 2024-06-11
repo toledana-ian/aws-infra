@@ -26,7 +26,7 @@ resource "aws_cloudfront_distribution" "app" {
     for_each = length(local.lambda_functions)!=0?[1]:[]
 
     content {
-      domain_name = split("/", aws_api_gateway_deployment.api[1].invoke_url)[2]
+      domain_name = split("/", aws_api_gateway_deployment.api[0].invoke_url)[2]
       origin_id   = "${var.name}-api"
       origin_path = "/default"
 

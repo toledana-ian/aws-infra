@@ -16,7 +16,12 @@ resource "aws_api_gateway_deployment" "api" {
 
   rest_api_id = aws_api_gateway_rest_api.api.id
 
-  depends_on = [aws_lambda_function.simple_rest]
+  depends_on = [
+    aws_api_gateway_method.simple_rest,
+    aws_api_gateway_integration.simple_rest,
+    aws_api_gateway_resource.api,
+    aws_api_gateway_resource.simple_rest
+  ]
 }
 
 resource "aws_api_gateway_stage" "api" {
@@ -24,7 +29,7 @@ resource "aws_api_gateway_stage" "api" {
 
   stage_name    = "default"
   rest_api_id   = aws_api_gateway_rest_api.api.id
-  deployment_id = aws_api_gateway_deployment.api[1].id
+  deployment_id = aws_api_gateway_deployment.api[0].id
 
   xray_tracing_enabled = true
 
@@ -64,7 +69,7 @@ resource "aws_api_gateway_resource" "simple_rest" {
   for_each = toset(local.lambda_simple_rest_functions)
 
   rest_api_id = aws_api_gateway_rest_api.api.id
-  parent_id   = aws_api_gateway_resource.api[1].id
+  parent_id   = aws_api_gateway_resource.api[0].id
   path_part   = each.value
 }
 
