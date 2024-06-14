@@ -18,6 +18,7 @@ module "app-file-metadata-viewer" {
 module "app-ovvie-gpt" {
   source = "../modules/app-nextjs-serverless"
   name   = "prod-ovvie-gpt"
+  random_suffix = "0614241840"
 
   enable_digest_authentication = false
 
