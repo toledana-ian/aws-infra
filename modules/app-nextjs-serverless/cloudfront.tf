@@ -24,10 +24,10 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   dynamic "origin" {
-    for_each = local.is_lambda_zip_uploaded ? [1] : []
+    for_each = local.is_lambda_zip_uploaded ? [0] : []
 
     content {
-      domain_name = split("/", aws_api_gateway_deployment.api[1].invoke_url)[2]
+      domain_name = split("/", aws_api_gateway_deployment.api[0].invoke_url)[2]
       origin_id   = "${var.name}-api"
       origin_path = "/default"
 
@@ -54,7 +54,7 @@ resource "aws_cloudfront_distribution" "app" {
     }
 
     dynamic "function_association" {
-      for_each = var.enable_digest_authentication ? [1] : []
+      for_each = var.enable_digest_authentication ? [0] : []
       content {
         event_type   = "viewer-request"
         function_arn = aws_cloudfront_function.digest_authentication[0].arn
@@ -65,7 +65,7 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   dynamic "ordered_cache_behavior" {
-    for_each = var.enable_digest_authentication ? [1] : []
+    for_each = var.enable_digest_authentication ? [0] : []
     content {
       allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
       cached_methods   = ["GET", "HEAD"]

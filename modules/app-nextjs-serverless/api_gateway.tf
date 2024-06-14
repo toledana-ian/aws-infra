@@ -18,7 +18,7 @@ resource "aws_api_gateway_stage" "api" {
 
   stage_name    = "default"
   rest_api_id   = aws_api_gateway_rest_api.api.id
-  deployment_id = aws_api_gateway_deployment.api[1].id
+  deployment_id = aws_api_gateway_deployment.api[0].id
 
   xray_tracing_enabled = true
 
@@ -54,7 +54,7 @@ resource "aws_api_gateway_method" "lambda_rest" {
   count = local.is_lambda_zip_uploaded ? 1 : 0
 
   rest_api_id   = aws_api_gateway_rest_api.api.id
-  resource_id   = aws_api_gateway_resource.lambda_rest[1].id
+  resource_id   = aws_api_gateway_resource.lambda_rest[0].id
   http_method   = "ANY"
   authorization = "NONE"
 }
@@ -63,9 +63,9 @@ resource "aws_api_gateway_integration" "lambda_rest" {
   count = local.is_lambda_zip_uploaded ? 1 : 0
 
   rest_api_id             = aws_api_gateway_rest_api.api.id
-  resource_id             = aws_api_gateway_resource.lambda_rest[1].id
-  http_method             = aws_api_gateway_method.lambda_rest[1].http_method
+  resource_id             = aws_api_gateway_resource.lambda_rest[0].id
+  http_method             = aws_api_gateway_method.lambda_rest[0].http_method
   integration_http_method = "ANY"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.lambda_rest[1].invoke_arn
+  uri                     = aws_lambda_function.lambda_rest[0].invoke_arn
 }

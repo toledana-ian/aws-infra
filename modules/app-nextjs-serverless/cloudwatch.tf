@@ -8,7 +8,7 @@ resource "aws_cloudwatch_log_group" "api_gateway" {
 resource "aws_cloudwatch_log_group" "lambda_rest" {
   count        = local.is_lambda_zip_uploaded ? 1 : 0
 
-  name              = "/aws/lambda/${aws_lambda_function.lambda_rest[1].function_name}"
+  name              = "/aws/lambda/${aws_lambda_function.lambda_rest[0].function_name}"
   retention_in_days = 7
 
   tags = var.tags
