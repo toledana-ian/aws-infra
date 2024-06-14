@@ -6,7 +6,7 @@ resource "aws_lambda_function" "lambda_rest" {
   s3_key        = data.aws_s3_object.lambda_zip[0].key
 
   runtime = "nodejs18.x"
-  handler = "server.handler"
+  handler = "lambda.handler"
   timeout = 10
 
   source_code_hash = data.aws_s3_object.lambda_zip[0].etag
