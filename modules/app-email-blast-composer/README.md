@@ -24,6 +24,12 @@ module "app-email-blast-composer" {
 
 ## Steps to Deploy
 
+1. **Change permission of the script**
+
+   ```sh
+   chmod +x ../modules/app-email-blast-composer/scripts/list_s3_zip_contents.sh
+   ```
+
 1. **Run Terraform Apply**
 
     ```sh
