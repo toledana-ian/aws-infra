@@ -24,7 +24,7 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   dynamic "origin" {
-    for_each = local.is_lamba_zip_uploaded ? [1] : []
+    for_each = local.is_lambda_zip_uploaded ? [1] : []
 
     content {
       domain_name = split("/", aws_api_gateway_deployment.api[1].invoke_url)[2]
