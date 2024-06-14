@@ -20,6 +20,7 @@ module "app-ovvie-gpt" {
   name   = "prod-ovvie-gpt"
   random_suffix = "0614241840"
 
+  is_lamba_zip_uploaded=false
   enable_digest_authentication = false
 
   route_app_sub_domain_name = "dynamdev-ovvie-gpt"
