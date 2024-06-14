@@ -8,13 +8,13 @@ resource "aws_api_gateway_rest_api" "api" {
 //########## API DEPLOYMENT ##########
 
 resource "aws_api_gateway_deployment" "api" {
-  count = var.is_lamba_zip_uploaded ? 1 : 0
+  count = local.is_lamba_zip_uploaded ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api.id
 }
 
 resource "aws_api_gateway_stage" "api" {
-  count = var.is_lamba_zip_uploaded ? 1 : 0
+  count = local.is_lamba_zip_uploaded ? 1 : 0
 
   stage_name    = "default"
   rest_api_id   = aws_api_gateway_rest_api.api.id
@@ -43,7 +43,7 @@ resource "aws_api_gateway_stage" "api" {
 //########## LAMBDA REST RESOURCE ##########
 
 resource "aws_api_gateway_resource" "lambda_rest" {
-  count = var.is_lamba_zip_uploaded ? 1 : 0
+  count = local.is_lamba_zip_uploaded ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api.id
   parent_id   = aws_api_gateway_rest_api.api.root_resource_id
@@ -51,7 +51,7 @@ resource "aws_api_gateway_resource" "lambda_rest" {
 }
 
 resource "aws_api_gateway_method" "lambda_rest" {
-  count = var.is_lamba_zip_uploaded ? 1 : 0
+  count = local.is_lamba_zip_uploaded ? 1 : 0
 
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.lambda_rest[1].id
@@ -60,7 +60,7 @@ resource "aws_api_gateway_method" "lambda_rest" {
 }
 
 resource "aws_api_gateway_integration" "lambda_rest" {
-  count = var.is_lamba_zip_uploaded ? 1 : 0
+  count = local.is_lamba_zip_uploaded ? 1 : 0
 
   rest_api_id             = aws_api_gateway_rest_api.api.id
   resource_id             = aws_api_gateway_resource.lambda_rest[1].id

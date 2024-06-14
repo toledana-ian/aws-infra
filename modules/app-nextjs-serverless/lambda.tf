@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "lambda_rest" {
-  count = var.is_lamba_zip_uploaded ? 1 : 0
+  count = local.is_lamba_zip_uploaded ? 1 : 0
 
   function_name = "${var.name}-nextjs-api"
   s3_bucket     = data.aws_s3_object.lambda_zip[1].bucket
@@ -16,7 +16,7 @@ resource "aws_lambda_function" "lambda_rest" {
 }
 
 resource "aws_lambda_permission" "lambda_rest" {
-  count        = var.is_lamba_zip_uploaded ? 1 : 0
+  count        = local.is_lamba_zip_uploaded ? 1 : 0
 
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
