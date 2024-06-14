@@ -1,6 +1,6 @@
 data "external" "get_lambda_list" {
   program = [
-    "bash", "${path.module}/scripts/list_s3_zip_contents.sh", local.s3_bucket_name, local.lambda_zip_filename
+    "bash", "${path.module}/scripts/check_s3_file.sh", local.s3_bucket_name, local.lambda_zip_filename
   ]
 }
 
