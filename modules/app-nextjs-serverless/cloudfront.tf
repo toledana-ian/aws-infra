@@ -4,8 +4,7 @@ resource "aws_cloudfront_origin_access_identity" "app" {
 
 resource "aws_cloudfront_distribution" "app" {
   aliases = [
-      var.route_app_sub_domain_name == "" ? var.route_domain_name :
-      format("%s.%s", var.route_app_sub_domain_name, var.route_domain_name)
+    var.route_app_sub_domain_name == "" ? var.route_domain_name : format("%s.%s", var.route_app_sub_domain_name, var.route_domain_name)
   ]
 
   enabled             = true
@@ -24,7 +23,7 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   dynamic "origin" {
-    for_each = local.is_lambda_zip_uploaded ? [0] : []
+    for_each = length(local.lambda_functions)!=0?[1]:[]
 
     content {
       domain_name = split("/", aws_api_gateway_deployment.api[0].invoke_url)[2]
@@ -54,7 +53,7 @@ resource "aws_cloudfront_distribution" "app" {
     }
 
     dynamic "function_association" {
-      for_each = var.enable_digest_authentication ? [0] : []
+      for_each = var.enable_digest_authentication ? [1] : []
       content {
         event_type   = "viewer-request"
         function_arn = aws_cloudfront_function.digest_authentication[0].arn
@@ -65,16 +64,16 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   dynamic "ordered_cache_behavior" {
-    for_each = var.enable_digest_authentication ? [0] : []
+    for_each = length(local.lambda_functions)!=0?[1]:[]
     content {
-      allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-      cached_methods   = ["GET", "HEAD"]
+      allowed_methods = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+      cached_methods = ["GET", "HEAD"]
       path_pattern     = "/api/*"
       target_origin_id = "${var.name}-api"
 
       forwarded_values {
         query_string = true
-        headers      = ["Origin"]
+        headers = ["Origin"]
 
         cookies {
           forward = "all"
@@ -103,11 +102,11 @@ resource "aws_cloudfront_distribution" "app" {
 
 resource "aws_cloudfront_key_value_store" "credentials_store" {
   count = var.enable_digest_authentication ? 1 : 0
-  name  = "${var.name}-credentials-store"
+  name = "${var.name}-credentials-store"
 }
 
 resource "aws_cloudfront_function" "digest_authentication" {
-  count   = var.enable_digest_authentication ? 1 : 0
+  count = var.enable_digest_authentication ? 1 : 0
   name    = "${var.name}-digest-authentication"
   runtime = "cloudfront-js-2.0"
 

@@ -1,3 +1,7 @@
+resource "aws_api_gateway_account" "app" {
+  cloudwatch_role_arn = aws_iam_role.api_gateway.arn
+}
+
 resource "aws_api_gateway_rest_api" "api" {
   name        = var.name
   description = "Lambda API of ${var.name}"
@@ -8,19 +12,20 @@ resource "aws_api_gateway_rest_api" "api" {
 //########## API DEPLOYMENT ##########
 
 resource "aws_api_gateway_deployment" "api" {
-  count = local.is_lambda_zip_uploaded ? 1 : 0
+  count = length(local.lambda_functions)!=0 ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api.id
 
   depends_on = [
-    aws_api_gateway_method.lambda_rest,
-    aws_api_gateway_integration.lambda_rest,
-    aws_api_gateway_resource.lambda_rest
+    aws_api_gateway_method.simple_rest,
+    aws_api_gateway_integration.simple_rest,
+    aws_api_gateway_resource.api,
+    aws_api_gateway_resource.simple_rest
   ]
 }
 
 resource "aws_api_gateway_stage" "api" {
-  count = local.is_lambda_zip_uploaded ? 1 : 0
+  count = length(local.lambda_functions)!=0 ? 1 : 0
 
   stage_name    = "default"
   rest_api_id   = aws_api_gateway_rest_api.api.id
@@ -46,44 +51,44 @@ resource "aws_api_gateway_stage" "api" {
   }
 }
 
-# //########## API ROOT RESOURCE ##########
-#
-# resource "aws_api_gateway_resource" "api" {
-#   count = local.is_lambda_zip_uploaded ? 1 : 0
-#
-#   rest_api_id = aws_api_gateway_rest_api.api.id
-#   parent_id   = aws_api_gateway_rest_api.api.root_resource_id
-#   path_part   = "api"
-#
-#   depends_on = [aws_lambda_function.lambda_rest]
-# }
+//########## API ROOT RESOURCE ##########
 
-//########## LAMBDA REST RESOURCE ##########
-
-resource "aws_api_gateway_resource" "lambda_rest" {
-  count = local.is_lambda_zip_uploaded ? 1 : 0
+resource "aws_api_gateway_resource" "api" {
+  count = length(local.lambda_functions)!=0 ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api.id
   parent_id   = aws_api_gateway_rest_api.api.root_resource_id
   path_part   = "api"
+
+  depends_on = [aws_lambda_function.simple_rest]
 }
 
-resource "aws_api_gateway_method" "lambda_rest" {
-  count = local.is_lambda_zip_uploaded ? 1 : 0
+//########## SIMPLE REST RESOURCE ##########
+
+resource "aws_api_gateway_resource" "simple_rest" {
+  for_each = toset(local.lambda_functions)
+
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_resource.api[0].id
+  path_part   = each.value
+}
+
+resource "aws_api_gateway_method" "simple_rest" {
+  for_each = toset(local.lambda_functions)
 
   rest_api_id   = aws_api_gateway_rest_api.api.id
-  resource_id   = aws_api_gateway_resource.lambda_rest[0].id
-  http_method   = "ANY"
+  resource_id   = aws_api_gateway_resource.simple_rest[each.value].id
+  http_method   = "POST"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "lambda_rest" {
-  count = local.is_lambda_zip_uploaded ? 1 : 0
+resource "aws_api_gateway_integration" "simple_rest" {
+  for_each = toset(local.lambda_functions)
 
   rest_api_id             = aws_api_gateway_rest_api.api.id
-  resource_id             = aws_api_gateway_resource.lambda_rest[0].id
-  http_method             = aws_api_gateway_method.lambda_rest[0].http_method
-  integration_http_method = "ANY"
+  resource_id             = aws_api_gateway_resource.simple_rest[each.value].id
+  http_method             = aws_api_gateway_method.simple_rest[each.value].http_method
+  integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.lambda_rest[0].invoke_arn
+  uri                     = aws_lambda_function.simple_rest[each.value].invoke_arn
 }
