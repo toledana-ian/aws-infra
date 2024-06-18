@@ -60,6 +60,10 @@ resource "aws_api_gateway_deployment" "api" {
     integration_version = join(" ", local.lambda_functions )
   }
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   depends_on = [aws_api_gateway_integration.simple_rest]
 }
 
