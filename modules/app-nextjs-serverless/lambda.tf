@@ -12,6 +12,12 @@ resource "aws_lambda_function" "simple_rest" {
   source_code_hash = data.aws_s3_object.lambda_zip[0].etag
   role             = aws_iam_role.lambda.arn
 
+  environment {
+    variables = {
+      BUCKET_NAME = local.s3_bucket_name
+    }
+  }
+
   tags = var.tags
 }
 
