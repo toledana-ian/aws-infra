@@ -8,7 +8,7 @@ resource "aws_cloudwatch_log_group" "api_gateway" {
 resource "aws_cloudwatch_log_group" "simple_rest" {
   for_each = toset(local.lambda_functions)
 
-  name              = "/aws/lambda/${aws_lambda_function.simple_rest[each.value].function_name}"
+  name              = "/aws/lambda/${var.name}/${each.value}"
   retention_in_days = 7
 
   tags = var.tags
