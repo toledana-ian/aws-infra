@@ -56,6 +56,10 @@ resource "aws_api_gateway_deployment" "api" {
 
   rest_api_id = aws_api_gateway_rest_api.api.id
 
+  triggers = {
+    integration_version = join(" ", local.lambda_functions )
+  }
+
   depends_on = [aws_api_gateway_integration.simple_rest]
 }
 
