@@ -14,9 +14,14 @@ variable "route_domain_name" {
   description = "The domain name for the route"
 }
 
-variable "route_app_sub_domain_name" {
+variable "route_app_sub_domain_name_frontend" {
   type = string
-  description = "The subdomain name for the app route"
+  description = "The subdomain name for the app route for frontend"
+}
+
+variable "route_app_sub_domain_name_mint_tracker" {
+  type = string
+  description = "The subdomain name for the app route for mint tracker"
 }
 
 variable "route_zone_id" {
@@ -33,7 +38,12 @@ variable "tags" {
   description = "A map of tags that will be added to the resources created by this module"
 }
 
-variable "enable_digest_authentication" {
+variable "enable_digest_authentication_frontend" {
+  type    = bool
+  description = "Determines if Digest Authentication should be enabled for viewer requests in the CloudFront distribution."
+}
+
+variable "enable_digest_authentication_mint_tracker" {
   type    = bool
   description = "Determines if Digest Authentication should be enabled for viewer requests in the CloudFront distribution."
 }
