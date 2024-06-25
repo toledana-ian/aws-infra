@@ -2,7 +2,7 @@ resource "aws_cloudfront_origin_access_identity" "app" {
   comment = "origin-access-identity-${var.name}"
 }
 
-resource "aws_cloudfront_distribution" "app" {
+resource "aws_cloudfront_distribution" "frontend" {
   aliases = [
     var.route_app_sub_domain_name_frontend == "" ? var.route_domain_name : format("%s.%s", var.route_app_sub_domain_name_frontend, var.route_domain_name)
   ]
@@ -62,7 +62,7 @@ resource "aws_cloudfront_distribution" "app" {
   tags = var.tags
 }
 
-resource "aws_cloudfront_distribution" "app" {
+resource "aws_cloudfront_distribution" "mint_tracker" {
   aliases = [
       var.route_app_sub_domain_name_mint_tracker == "" ? var.route_domain_name : format("%s.%s", var.route_app_sub_domain_name_mint_tracker, var.route_domain_name)
   ]
