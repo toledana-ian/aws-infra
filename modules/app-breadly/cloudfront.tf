@@ -12,6 +12,18 @@ resource "aws_cloudfront_distribution" "frontend" {
   http_version        = "http2"
   default_root_object = "index.html"
 
+  custom_error_response {
+    error_code         = 404
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+
+  custom_error_response {
+    error_code         = 403
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+
   origin {
     domain_name = aws_s3_bucket.app.bucket_regional_domain_name
     origin_id   = "${var.name}-app"
@@ -71,6 +83,18 @@ resource "aws_cloudfront_distribution" "mint_tracker" {
   is_ipv6_enabled     = true
   http_version        = "http2"
   default_root_object = "index.html"
+
+  custom_error_response {
+    error_code         = 404
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+
+  custom_error_response {
+    error_code         = 403
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
 
   origin {
     domain_name = aws_s3_bucket.app.bucket_regional_domain_name
