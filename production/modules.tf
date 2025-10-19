@@ -33,19 +33,19 @@ module "app-ovvie-gpt" {
   })
 }
 
-# module "app-ec2-public-chess-api" {
-#   source = "../modules/app-ec2-public"
-#
-#   name           = "prod-chess-api"
-#   instance_type  = "t3.micro"
-#   vpc_id         = module.network.vpc_id
-#   public_subnet_id = module.network.public_subnet_id
-#
-#   route_zone_id             = data.terraform_remote_state.global.outputs.route53_zone_id_christiantoledana_com
-#   route_domain_name         = data.terraform_remote_state.global.outputs.route53_zone_name_christiantoledana_com
-#   route_app_sub_domain_name = "chess-api"
-#
-#   tags = merge(local.default_tags, {
-#     Project = "chess-api"
-#   })
-# }
+module "app-ec2-public-chess-api" {
+  source = "../modules/app-ec2-public"
+
+  name           = "prod-chess-api"
+  instance_type  = "t3.micro"
+  vpc_id         = module.network.vpc_id
+  public_subnet_id = module.network.public_subnet_id
+
+  route_zone_id             = data.terraform_remote_state.global.outputs.route53_zone_id_christiantoledana_com
+  route_domain_name         = data.terraform_remote_state.global.outputs.route53_zone_name_christiantoledana_com
+  route_app_sub_domain_name = "chess-api"
+
+  tags = merge(local.default_tags, {
+    Project = "chess-api"
+  })
+}
